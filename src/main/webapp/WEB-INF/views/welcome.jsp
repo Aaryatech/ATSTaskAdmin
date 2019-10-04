@@ -65,18 +65,7 @@
 						<div class="card-header header-elements-inline">
 							<h3 class="card-title">WELCOME</h3>
 						</div>
-						<%-- <div class="form-group row">
-								<label class="col-form-label col-lg-2" for=leaveInitialAuth>User Name
-									 : </label>
-								<div class="col-lg-6">
-									<input type="text" class="form-control" id="leaveInitialAuth"
-										Value="${sessionScope.UserDetail.empSname}&nbsp;${sessionScope.UserDetail.empFname}"
-						
-										name="leaveInitialAuth" autocomplete="off" readonly>
-
-								</div>
-							</div> --%>
-						  
+						<%--  
 						<c:if test="${authorityInformation.leaveInitialAuth != '0'}">
 							<h6 class="card-title">Leave Authority</h6>
 
@@ -101,8 +90,8 @@
 								</div>
 							</div>
 
-						</c:if>
-						<c:if test="${authorityInformation.claimInitialAuth != '0'}">
+						</c:if> --%>
+						<%-- <c:if test="${authorityInformation.claimInitialAuth != '0'}">
 							<h6 class="card-title">Claim Authority</h6>
 
 							<div class="form-group row">
@@ -125,25 +114,63 @@
 
 								</div>
 							</div>
-						</c:if>
-						<%
-							if (session.getAttribute("errorMsg") != null) {
-						%>
+						</c:if> --%>
+
+						<table
+							class="table table-bordered table-hover datatable-highlight1 datatable-button-html5-basic  datatable-button-print-columns11"
+							id="printtable1">
+							<thead>
+								<tr class="bg-blue">
+
+									<th width="10%">Sr. No.</th>
+									<th>Project Name</th>
+									<th>Total Hrs Spent</th>
+ 
+								</tr>
+							</thead>
+							<tbody>
 
 
-						<%
-							session.removeAttribute("errorMsg");
-							}
-						%>
-						<%
-							if (session.getAttribute("successMsg") != null) {
-						%>
+								<c:forEach items="${projHrsList}" var="projList"
+									varStatus="count">
+									<tr>
+										<td>${count.index+1}</td>
+										<td>${projList.projectTitle}</td>
+										<td style="text-align: right;">${projList.workHrs}</td>
 
-						<%
-							session.removeAttribute("successMsg");
-							}
-						%>
+									</tr>
+								</c:forEach>
 
+							</tbody>
+						</table>
+						
+						<table
+							class="table table-bordered table-hover datatable-highlight1 datatable-button-html5-basic  datatable-button-print-columns11"
+							id="printtable1">
+							<thead>
+								<tr class="bg-blue">
+
+									<th width="10%">Sr. No.</th>
+									<th>Employee Name</th>
+									<th>Balanced Leave</th>
+ 
+								</tr>
+							</thead>
+							<tbody>
+
+
+								<c:forEach items="${employeeInfoList}" var="leaveHistoryList"
+									varStatus="count">
+									<tr>
+										<td>${count.index+1}</td>
+										<td>${leaveHistoryList.empName}</td>
+										<td style="text-align: right;">${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve}</td>
+
+									</tr>
+								</c:forEach>
+
+							</tbody>
+						</table>
 					</div>
 
 				</div>

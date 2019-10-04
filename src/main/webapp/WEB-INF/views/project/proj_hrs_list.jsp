@@ -184,7 +184,7 @@
 										<td>${logList.logType==1 ? 'Routine' : logList.logType==2 ? 'Extra'  : '-'}</td>
 										<td class="text-center"><a
 											href="${pageContext.request.contextPath}/showEditProjHrs?workLogId=${logList.workLogId}"><i
-												class="icon-list-unordered" style="color: black;"></i></a></td>
+												class="icon-pencil7" style="color: black;"></i></a></td>
 
 
 									</tr>

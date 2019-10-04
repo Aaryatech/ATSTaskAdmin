@@ -35,6 +35,7 @@ import com.ats.hradmin.common.Constants;
 import com.ats.hradmin.common.FormValidation;
 import com.ats.hradmin.common.VpsImageUpload;
 import com.ats.hradmin.leave.model.CalenderYear;
+import com.ats.hradmin.leave.model.EmpLeaveHistoryRep;
 import com.ats.hradmin.leave.model.GetAuthorityIds;
 import com.ats.hradmin.model.AccessRightModule;
 import com.ats.hradmin.model.AuthorityInformation;
@@ -43,6 +44,7 @@ import com.ats.hradmin.model.EmployeeInfo;
 import com.ats.hradmin.model.GetUserData;
 import com.ats.hradmin.model.Info;
 import com.ats.hradmin.model.LoginResponse;
+import com.ats.hradmin.model.ProjectWiseHrsCount;
 import com.ats.hradmin.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -161,7 +163,7 @@ public class HomeController {
 						System.err.println("updateEmpProfPic ");
 						if (info.isError() == false) {
 							session.setAttribute("successMsg", "Record Updated Successfully");
-							session.setAttribute("profilePic",imageName);
+							session.setAttribute("profilePic", imageName);
 
 						} else {
 							session.setAttribute("errorMsg", "Failed to Update");
@@ -275,15 +277,32 @@ public class HomeController {
 		HttpSession session = request.getSession();
 		session.setAttribute("sessionModuleId", 0);
 		session.setAttribute("sessionSubModuleId", 0);
+		List<EmpLeaveHistoryRep> employeeInfoList = new ArrayList<EmpLeaveHistoryRep>();
+		List<ProjectWiseHrsCount> employeeInfoList1 = new ArrayList<ProjectWiseHrsCount>();
 
 		try {
 			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
-			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-			map.add("empId", userObj.getEmpId());
+			/*
+			 * MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,
+			 * Object>(); map.add("empId", userObj.getEmpId());
+			 * 
+			 * AuthorityInformation authorityInformation = Constants.getRestTemplate()
+			 * .postForObject(Constants.url + "/getAuthorityInfoByEmpId", map,
+			 * AuthorityInformation.class); mav.addObject("authorityInformation",
+			 * authorityInformation);
+			 */
+			EmpLeaveHistoryRep[] employeeInfo = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getLeaveCountOfAllEmployee", EmpLeaveHistoryRep[].class);
 
-			AuthorityInformation authorityInformation = Constants.getRestTemplate()
-					.postForObject(Constants.url + "/getAuthorityInfoByEmpId", map, AuthorityInformation.class);
-			mav.addObject("authorityInformation", authorityInformation);
+			employeeInfoList = new ArrayList<EmpLeaveHistoryRep>(Arrays.asList(employeeInfo));
+			mav.addObject("employeeInfoList", employeeInfoList);
+
+			ProjectWiseHrsCount[] employeeInfo1 = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectHrsCount", ProjectWiseHrsCount[].class);
+
+			employeeInfoList1 = new ArrayList<ProjectWiseHrsCount>(Arrays.asList(employeeInfo1));
+			mav.addObject("projHrsList", employeeInfoList1);
+			System.out.println("Login Process  2" +employeeInfoList1.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -331,8 +350,8 @@ public class HomeController {
 					System.out.println("currYr.getCalYrId():" + currYr.getCalYrId());
 					session.setAttribute("currYearId", currYr.getCalYrId());
 					session.setAttribute("logoUrl", Constants.getImageSaveUrl);
-					session.setAttribute("profilePic",userObj.getEmpPhoto());
-					
+					session.setAttribute("profilePic", userObj.getEmpPhoto());
+
 					List<AccessRightModule> moduleJsonList = new ArrayList<AccessRightModule>();
 
 					try {
