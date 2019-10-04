@@ -172,8 +172,8 @@
 												class="form-control form-control-select2 select2-hidden-accessible"
 												aria-hidden="true">
 												<option value="">Please Select</option>
-												<option value="1">Routine</option>
-												<option value="2">Extra</option>
+												<option value="1">Regular Work</option>
+												<option value="2">Extra Work</option>
 
 											</select> <span class="validation-invalid-label" id="error_TypeId"
 												style="display: none;">This field is required.</span>

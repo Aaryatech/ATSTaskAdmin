@@ -193,9 +193,9 @@
 												aria-hidden="true">
 												<option value="">Please Select</option>
 												<option value="1"
-													${editworkLog.logType == '1'  ? 'Selected': '' }>Routine</option>
+													${editworkLog.logType == '1'  ? 'Selected': '' }>Regular Work</option>
 												<option value="2"
-													${editworkLog.logType == '2'  ? 'Selected': '' }>Extra</option>
+													${editworkLog.logType == '2'  ? 'Selected': '' }>Extra Work</option>
 
 											</select> <span class="validation-invalid-label" id="error_TypeId"
 												style="display: none;">This field is required.</span>
