@@ -116,7 +116,122 @@
 							</div>
 						</c:if> --%>
 
-						<table
+						<div class="row">
+
+							<c:forEach items="${projHrsList}" var="projList">
+								<div class="col-sm-12 col-md-4">
+									<%-- <div class="card   ">
+										<div class="card-body pb-0" align="center">
+
+											<h4 class="mb-0">
+												<span class="count"  ><i
+													class="fa fa-task">${projList.workHrs}</i></span>
+											</h4>
+											<p   >
+												<font  >${projList.projectTitle}</font>
+											</p>
+
+										</div>
+									</div>
+ --%>
+									<div class="card">
+										<div
+											class="card-header bg-primary text-white header-elements-inline">
+											<h6 class="card-title">${projList.projectTitle}</h6>
+											<div class="header-elements">
+												<div class="list-icons">
+													<a class="list-icons-item" data-action="collapse"></a> <a
+														class="list-icons-item" data-action="remove"></a>
+												</div>
+											</div>
+										</div>
+
+										<div class="card-body" align="left">
+											Logged Hours
+											<h4>${projList.workHrs}</h4>
+											Estimated Hours
+											<h4>${projList.projectEstMhrs}</h4>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+						
+						
+						
+							<div class="row">
+
+							<c:forEach items="${employeeInfoList}" var="leaveHistoryList">
+								
+								<div class="col-sm-12 col-md-4">
+									<%-- <div class="card   ">
+										<div class="card-body pb-0" align="center">
+
+											<h4 class="mb-0">
+												<span class="count"  ><i
+													class="fa fa-task">${projList.workHrs}</i></span>
+											</h4>
+											<p   >
+												<font  >${projList.projectTitle}</font>
+											</p>
+
+										</div>
+									</div>
+ --%>
+									<div class="card">
+										<div
+											class="card-header bg-success text-white header-elements-inline">
+											<h6 class="card-title">${leaveHistoryList.empName}</h6>
+											<div class="header-elements">
+												<div class="list-icons">
+													<a class="list-icons-item" data-action="collapse"></a> <a
+														class="list-icons-item" data-action="remove"></a>
+												</div>
+											</div>
+										</div>
+
+										<div class="card-body" align="left">
+											Pending Leave
+											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve}</h4>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+						
+						
+						<!-- Current server load -->
+						<!-- <div class="card bg-pink-400">
+									<div class="card-body">
+										<div class="d-flex">
+											<h3 class="font-weight-semibold mb-0">49.4%</h3>
+											<div class="list-icons ml-auto">
+						                		<div class="list-icons-item dropdown">
+						                			<a href="#" class="list-icons-item dropdown-toggle" data-toggle="dropdown"><i class="icon-cog3"></i></a>
+													<div class="dropdown-menu dropdown-menu-right">
+														<a href="#" class="dropdown-item"><i class="icon-sync"></i> Update data</a>
+														<a href="#" class="dropdown-item"><i class="icon-list-unordered"></i> Detailed log</a>
+														<a href="#" class="dropdown-item"><i class="icon-pie5"></i> Statistics</a>
+														<a href="#" class="dropdown-item"><i class="icon-cross3"></i> Clear list</a>
+													</div>
+						                		</div>
+					                		</div>
+					                	</div>
+					                	
+					                	<div>
+											Current server load
+											<div class="font-size-sm opacity-75">34.6% avg</div>
+										</div>
+									</div>
+
+									<div id="server-load"></div>
+								</div> -->
+						<!-- /current server load -->
+
+
+
+
+						<%-- <table
 							class="table table-bordered table-hover datatable-highlight1 datatable-button-html5-basic  datatable-button-print-columns11"
 							id="printtable1">
 							<thead>
@@ -125,7 +240,7 @@
 									<th width="10%">Sr. No.</th>
 									<th>Project Name</th>
 									<th>Total Hrs Spent</th>
- 
+
 								</tr>
 							</thead>
 							<tbody>
@@ -143,7 +258,7 @@
 
 							</tbody>
 						</table>
-						
+
 						<table
 							class="table table-bordered table-hover datatable-highlight1 datatable-button-html5-basic  datatable-button-print-columns11"
 							id="printtable1">
@@ -153,7 +268,7 @@
 									<th width="10%">Sr. No.</th>
 									<th>Employee Name</th>
 									<th>Balanced Leave</th>
- 
+
 								</tr>
 							</thead>
 							<tbody>
@@ -170,7 +285,7 @@
 								</c:forEach>
 
 							</tbody>
-						</table>
+						</table> --%>
 					</div>
 
 				</div>
