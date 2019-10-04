@@ -1,0 +1,411 @@
+package com.ats.hradmin.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import org.springframework.web.servlet.ModelAndView;
+
+import com.ats.hradmin.common.AcessController;
+import com.ats.hradmin.common.Constants;
+import com.ats.hradmin.common.FormValidation;
+import com.ats.hradmin.common.HoursConversion;
+import com.ats.hradmin.model.AccessRightModule;
+
+import com.ats.hradmin.model.GetProjectHeader;
+import com.ats.hradmin.model.Info;
+import com.ats.hradmin.model.LoginResponse;
+import com.ats.hradmin.model.ProjectHeader;
+import com.ats.hradmin.model.WorkLog;
+import com.ats.hradmin.model.WorkType;
+
+@Controller
+@Scope("session")
+public class ProjectHrsController {
+	
+	WorkType editwork =new WorkType();
+	// *****************************Work type************************
+
+	@RequestMapping(value = "/showAddWorkType", method = RequestMethod.GET)
+	public ModelAndView showAddWorkType(HttpServletRequest request, HttpServletResponse response) {
+
+		ModelAndView model = new ModelAndView("master/addWorkType");
+
+		return model;
+	}
+
+	@RequestMapping(value = "/submitAddWorkType", method = RequestMethod.POST)
+	public String submitAddWorkType(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			Date date = new Date();
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			String typeName = request.getParameter("typeName");
+			String typeShortName = request.getParameter("typeShortName");
+			String remark = null;
+			try {
+				remark = request.getParameter("remark");
+			} catch (Exception e) {
+				remark = "";
+			}
+
+			Boolean ret = false;
+
+			if (FormValidation.Validaton(typeName, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(typeShortName, "") == true) {
+
+				ret = true;
+			}
+			if (ret == false) {
+
+				WorkType workType = new WorkType();
+
+				workType.setWorkTypeName(typeName);
+				workType.setShortName(typeShortName);
+				workType.setWorkTypeDesc(remark);
+				workType.setIsActive(1);
+				workType.setDelStatus(1);
+				workType.setMakerUserId(userObj.getUserId());
+				workType.setUpdateDatetime(sf.format(date));
+				workType.setDelStatus(1);
+				workType.setIsActive(1);
+				workType.setExInt1(0);
+				workType.setExVar1("NA");
+
+				WorkType res = Constants.getRestTemplate().postForObject(Constants.url + "/saveWorkType", workType,
+						WorkType.class);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "redirect:/showWorkTypeList";
+	}
+
+	@RequestMapping(value = "/showWorkTypeList", method = RequestMethod.GET)
+	public ModelAndView showEmpList(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = null;
+
+		try {
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			List<AccessRightModule> newModuleList = (List<AccessRightModule>) session.getAttribute("moduleJsonList");
+			Info view = AcessController.checkAccess("showWorkTypeList", "showWorkTypeList", 1, 0, 0, 0, newModuleList);
+
+			if (view.isError() == true) {
+
+				model = new ModelAndView("accessDenied");
+
+			} else {
+				model = new ModelAndView("master/workTypeList");
+
+				WorkType[] employeeDepartment = Constants.getRestTemplate()
+						.getForObject(Constants.url + "/getWorkTypeList", WorkType[].class);
+
+				List<WorkType> employeeDepartmentlist = new ArrayList<WorkType>(Arrays.asList(employeeDepartment));
+
+				for (int i = 0; i < employeeDepartmentlist.size(); i++) {
+					employeeDepartmentlist.get(i).setExVar1(
+							FormValidation.Encrypt(String.valueOf(employeeDepartmentlist.get(i).getWorkTypeId())));
+				}
+
+				model.addObject("typeList", employeeDepartmentlist);
+
+				Info add = AcessController.checkAccess("showWorkTypeList", "showWorkTypeList", 0, 1, 0, 0,
+						newModuleList);
+				Info edit = AcessController.checkAccess("showWorkTypeList", "showWorkTypeList", 0, 0, 1, 0,
+						newModuleList);
+				Info delete = AcessController.checkAccess("showWorkTypeList", "showWorkTypeList", 0, 0, 0, 1,
+						newModuleList);
+
+				if (add.isError() == false) {
+					System.out.println(" add   Accessable ");
+					model.addObject("addAccess", 0);
+
+				}
+				if (edit.isError() == false) {
+					System.out.println(" edit   Accessable ");
+					model.addObject("editAccess", 0);
+				}
+				if (delete.isError() == false) {
+					System.out.println(" delete   Accessable ");
+					model.addObject("deleteAccess", 0);
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+
+	@RequestMapping(value = "/showEditWorkType", method = RequestMethod.GET)
+	public ModelAndView showEditWorkType(HttpServletRequest request, HttpServletResponse response) {
+
+		ModelAndView model = new ModelAndView("master/editWorkType");
+
+		try {
+			String base64encodedString = request.getParameter("workTypeId");
+			String workTypeId = FormValidation.DecodeKey(base64encodedString);
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("workTypeId", Integer.parseInt(workTypeId));
+			  editwork = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getWorkTypeById",map, WorkType.class);
+ 			model.addObject("editwork", editwork);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
+	
+	@RequestMapping(value = "/submitEditWorkType", method = RequestMethod.POST)
+	public String submitEditWorkType(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			Date date = new Date();
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			String typeName = request.getParameter("typeName");
+			String typeShortName = request.getParameter("typeShortName");
+			String remark = null;
+			try {
+				remark = request.getParameter("remark");
+			} catch (Exception e) {
+				remark = "";
+			}
+
+			Boolean ret = false;
+
+			if (FormValidation.Validaton(typeName, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(typeShortName, "") == true) {
+
+				ret = true;
+			}
+			if (ret == false) {
+
+			 
+				editwork.setWorkTypeName(typeName);
+				editwork.setShortName(typeShortName);
+				editwork.setWorkTypeDesc(remark);
+				editwork.setIsActive(1);
+				editwork.setDelStatus(1);
+				editwork.setMakerUserId(userObj.getUserId());
+				editwork.setUpdateDatetime(sf.format(date));
+				editwork.setDelStatus(1);
+				editwork.setIsActive(1);
+				editwork.setExInt1(0);
+				editwork.setExVar1("NA");
+
+				WorkType res = Constants.getRestTemplate().postForObject(Constants.url + "/saveWorkType", editwork,
+						WorkType.class);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "redirect:/showWorkTypeList";
+	}
+
+	
+	@RequestMapping(value = "/deleteWorkType", method = RequestMethod.GET)
+	public String deleteWorkType(HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		String a = null;
+		List<AccessRightModule> newModuleList = (List<AccessRightModule>) session.getAttribute("moduleJsonList");
+
+		Info view = AcessController.checkAccess("deleteWorkType", "showWorkTypeList", 0, 0, 0, 1, newModuleList);
+
+		try {
+			if (view.isError() == true) {
+
+				a = "redirect:/accessDenied";
+
+			}
+
+			else {
+				a="redirect:/showWorkTypeList";
+			}
+			String base64encodedString = request.getParameter("workTypeId");
+			String workTypeId = FormValidation.DecodeKey(base64encodedString);
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("workTypeId", workTypeId);
+			Info info = Constants.getRestTemplate().postForObject(Constants.url + "/deleteWorkType", map, Info.class);
+
+			if (info.isError() == false) {
+				session.setAttribute("successMsg", "Deleted Successfully");
+			} else {
+				session.setAttribute("errorMsg", "Failed to Delete");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute("errorMsg", "Failed to Delete");
+		}
+		return a;
+	}
+
+
+	// *****************************Add project hrs************************
+
+	@RequestMapping(value = "/showAddProjHrs", method = RequestMethod.GET)
+	public ModelAndView showAddProjHrs(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = new ModelAndView("project/add_proj_hrs");
+
+		try {
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+			
+			WorkType[] workTypeListArr = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getWorkTypeList", WorkType[].class);
+			List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
+			model.addObject("workTypeList", workTypeList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
+	
+	@RequestMapping(value = "/submitInsertProjHrs", method = RequestMethod.POST)
+	public String submitInsertProjHrs(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			Date date = new Date();
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			String projId = request.getParameter("projId");
+			String workTypeId = request.getParameter("workTypeId");
+			String typeId = request.getParameter("TypeId");
+			String workDate = request.getParameter("workDate");
+			String projectHrs = request.getParameter("projectHrs");
+  			String remark = null;
+			try {
+				remark = request.getParameter("woDesc");
+			} catch (Exception e) {
+				remark = "";
+			}
+
+			Boolean ret = false;
+
+			if (FormValidation.Validaton(projId, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(workTypeId, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(workDate, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(projectHrs, "") == true) {
+
+				ret = true;
+			}
+
+			if (ret == false) {
+
+				WorkLog workType = new WorkLog();
+				workType.setWorkHrs(HoursConversion.convertHoursToMin(projectHrs));
+ 				workType.setEmpId(userObj.getUserId());;
+				workType.setWorkTypeId(Integer.parseInt(workTypeId));
+				workType.setProjectId(Integer.parseInt(projId));
+				workType.setLogType(Integer.parseInt(typeId));
+				workType.setWorkDate(workDate);
+				workType.setWorkDesc(remark);
+ 				workType.setExFloat1(1);
+  				workType.setIsActive(1);
+				workType.setDelStatus(1);
+				workType.setMakerUserId(userObj.getUserId());
+				workType.setUpdateDatetime(sf.format(date));
+				workType.setDelStatus(1);
+				workType.setIsActive(1);
+				workType.setExInt1(0);
+				workType.setExVar1("NA");
+				workType.setExVar2("NA");
+
+				WorkLog res = Constants.getRestTemplate().postForObject(Constants.url + "/saveWorkLog", workType,
+						WorkLog.class);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "redirect:/showWorkTypeList";
+	}
+	@RequestMapping(value = "/showProjHrsListToEmp", method = RequestMethod.GET)
+	public ModelAndView showProjHrsListToEmp(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = new ModelAndView("project/proj_hrs_list");
+
+		try {
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+			
+			 System.out.println("project "+projectHeaderList.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
+	@RequestMapping(value = "/showEditProjHrs", method = RequestMethod.GET)
+	public ModelAndView showEditProjHrs(HttpServletRequest request, HttpServletResponse response) {
+
+		ModelAndView model = new ModelAndView("project/edit_proj_hrs");
+
+		try {
+			GetProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllListByCompanyId", GetProjectHeader[].class);
+			List<GetProjectHeader> projectHeaderList = new ArrayList<GetProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+
+}
