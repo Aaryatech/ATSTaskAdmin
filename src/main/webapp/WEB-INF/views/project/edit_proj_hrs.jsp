@@ -45,6 +45,12 @@
 					</div>
 
 
+					<div class="breadcrumb justify-content-center">
+						<a href="${pageContext.request.contextPath}/showProjHrsListToEmp"
+							class="breadcrumb-elements-item"> Employee Project Hrs List</a>
+
+					</div>
+
 
 
 				</div>
@@ -242,7 +248,8 @@
 											<button type="submit" class="btn bg-blue ml-3 legitRipple"
 												id="submtbtn">
 												Submit <i class="icon-paperplane ml-2"></i>
-											</button>
+											</button>&nbsp; &nbsp;<a href="${pageContext.request.contextPath}/showProjHrsListToEmp"><button
+										type="button" class="btn btn-primary"><i class="${sessionScope.cancelIcon}" aria-hidden="true"></i>&nbsp;&nbsp; Cancel</button></a>
 
 										</div>
 									</div>

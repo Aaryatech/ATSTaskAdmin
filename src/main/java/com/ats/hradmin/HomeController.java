@@ -282,6 +282,19 @@ public class HomeController {
 
 		try {
 			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+ 			EmpLeaveHistoryRep[] employeeInfo = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getLeaveCountOfAllEmployee", EmpLeaveHistoryRep[].class);
+ 			employeeInfoList = new ArrayList<EmpLeaveHistoryRep>(Arrays.asList(employeeInfo));
+			mav.addObject("employeeInfoList", employeeInfoList);
+
+			ProjectWiseHrsCount[] employeeInfo1 = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectHrsCount", ProjectWiseHrsCount[].class);
+
+			employeeInfoList1 = new ArrayList<ProjectWiseHrsCount>(Arrays.asList(employeeInfo1));
+			mav.addObject("projHrsList", employeeInfoList1);
+			System.out.println("Login Process  2" +employeeInfoList1.toString());
+			
+			
 			/*
 			 * MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,
 			 * Object>(); map.add("empId", userObj.getEmpId());
@@ -291,18 +304,6 @@ public class HomeController {
 			 * AuthorityInformation.class); mav.addObject("authorityInformation",
 			 * authorityInformation);
 			 */
-			EmpLeaveHistoryRep[] employeeInfo = Constants.getRestTemplate()
-					.getForObject(Constants.url + "/getLeaveCountOfAllEmployee", EmpLeaveHistoryRep[].class);
-
-			employeeInfoList = new ArrayList<EmpLeaveHistoryRep>(Arrays.asList(employeeInfo));
-			mav.addObject("employeeInfoList", employeeInfoList);
-
-			ProjectWiseHrsCount[] employeeInfo1 = Constants.getRestTemplate()
-					.getForObject(Constants.url + "/getProjectHrsCount", ProjectWiseHrsCount[].class);
-
-			employeeInfoList1 = new ArrayList<ProjectWiseHrsCount>(Arrays.asList(employeeInfo1));
-			mav.addObject("projHrsList", employeeInfoList1);
-			System.out.println("Login Process  2" +employeeInfoList1.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();

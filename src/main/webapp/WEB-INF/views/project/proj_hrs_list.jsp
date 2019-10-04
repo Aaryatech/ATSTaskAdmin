@@ -49,6 +49,12 @@
 					</div>
 
 
+					<div class="breadcrumb justify-content-center">
+						<a href="${pageContext.request.contextPath}/showAddProjHrs"
+							class="breadcrumb-elements-item">Add Employee Project Hrs </a>
+
+					</div>
+
 					<%-- <div class="breadcrumb justify-content-center">
 						<a href="${pageContext.request.contextPath}/employeeAdd"
 							class="breadcrumb-elements-item"> Add Employee </a>
