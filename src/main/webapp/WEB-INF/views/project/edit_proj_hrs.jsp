@@ -44,7 +44,7 @@
 							class="icon-more"></i></a>
 					</div>
 
-					 
+
 
 
 				</div>
@@ -114,7 +114,7 @@
 								%>
 
 								<form
-									action="${pageContext.request.contextPath}/submitInsertProjHrs"
+									action="${pageContext.request.contextPath}/submitEditProjHrs"
 									id="submitInsertProjHrs" method="post">
 									<div class="form-group row">
 										<label class="col-form-label col-lg-2" for="select2">Select
@@ -129,7 +129,7 @@
 
 												<c:forEach items="${projList}" var="projList">
 													<c:choose>
-														<c:when test="${projList.projectId==projId}">
+														<c:when test="${projList.projectId==editworkLog.projectId}">
 															<option selected value="${projList.projectId}">${projList.projectTitle}</option>
 														</c:when>
 														<c:otherwise>
@@ -157,14 +157,15 @@
 												aria-hidden="true">
 												<option value="">Please Select</option>
 
-												<c:forEach items="${projList}" var="projList">
+												<c:forEach items="${workTypeList}" var="workTypeList">
 													<c:choose>
-														<c:when test="${projList.projectId==projId}">
-															<option selected value="${projList.projectId}">${projList.projectTitle}</option>
+														<c:when
+															test="${workTypeList.workTypeId==editworkLog.workTypeId}">
+															<option selected value="${workTypeList.workTypeId}">${workTypeList.workTypeName}</option>
 														</c:when>
 														<c:otherwise>
 
-															<option value="${projList.projectId}">${projList.projectTitle}</option>
+															<option value="${workTypeList.workTypeId}">${workTypeList.workTypeName}</option>
 
 														</c:otherwise>
 													</c:choose>
@@ -176,14 +177,34 @@
 									</div>
 
 									<div class="form-group row">
+										<label class="col-form-label col-lg-2" for="select2">
+											Type <span style="color: red">* </span>:
+										</label>
+										<div class="col-lg-10">
+											<select name="TypeId" data-placeholder="Select  Type"
+												id="TypeId"
+												class="form-control form-control-select2 select2-hidden-accessible"
+												aria-hidden="true">
+												<option value="">Please Select</option>
+												<option value="1"
+													${editworkLog.logType == '1'  ? 'Selected': '' }>Routine</option>
+												<option value="2"
+													${editworkLog.logType == '2'  ? 'Selected': '' }>Extra</option>
+
+											</select> <span class="validation-invalid-label" id="error_TypeId"
+												style="display: none;">This field is required.</span>
+										</div>
+									</div>
+
+									<div class="form-group row">
 										<label class="col-form-label col-lg-2" for="joiningDate">Work
 											Date <span style="color: red">* </span>:
 										</label>
 										<div class="col-lg-10">
 											<input type="text" class="form-control datepickerclass "
 												name="workDate" id="workDate"
-												placeholder="Work Date"> <span
-												class="validation-invalid-label" id="error_workDate"
+												value="${editworkLog.workDate}" placeholder="Work Date">
+											<span class="validation-invalid-label" id="error_workDate"
 												style="display: none;">This field is required.</span>
 										</div>
 									</div>
@@ -196,8 +217,8 @@
 										<div class="col-lg-10">
 											<input type="text" class="form-control"
 												placeholder="Enter Project Hrs" id="projectHrs"
-												data-mask="99:99" name="projectHrs" autocomplete="off"
-												> <span
+												value="${editworkLog.workHrs}" data-mask="99:99"
+												name="projectHrs" autocomplete="off"> <span
 												class="validation-invalid-label" id="error_projectHrs"
 												style="display: none;">This field is required.</span>
 										</div>
@@ -209,8 +230,8 @@
 											Description : </label>
 										<div class="col-lg-10">
 											<textarea rows="3" cols="3" class="form-control"
-												placeholder="Any Remark" onchange="trim(this)"
-												id="woDesc" name="woDesc"></textarea>
+												value="${editworkLog.workDesc}" placeholder="Any Remark"
+												onchange="trim(this)" id="woDesc" name="woDesc"></textarea>
 
 										</div>
 									</div>
@@ -222,7 +243,7 @@
 												id="submtbtn">
 												Submit <i class="icon-paperplane ml-2"></i>
 											</button>
-										 
+
 										</div>
 									</div>
 								</form>
@@ -255,7 +276,6 @@
 			return;
 		}
 
-	
 		$(document).ready(function($) {
 
 			$("#submitInsertWeeklyOff").submit(function(e) {
@@ -291,7 +311,7 @@
 				} else {
 					$("#error_workDate").hide()
 				}
-				
+
 				if (!$("#projectHrs").val()) {
 
 					isError = true;

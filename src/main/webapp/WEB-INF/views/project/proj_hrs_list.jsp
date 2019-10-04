@@ -68,7 +68,7 @@
 				<!-- Highlighting rows and columns -->
 				<div class="card">
 					<div class="card-header header-elements-inline">
-						<h5 class="card-title">Employee KRA KPI</h5>
+						<h5 class="card-title">Employee Work Hours</h5>
 						<!-- <div class="header-elements">
 							<div class="list-icons">
 								<a class="list-icons-item" data-action="collapse"></a>
@@ -121,39 +121,37 @@
 							<div class="form-group row">
 
 								<label class="col-form-label col-lg-2" for="select2">Select
-											Project <span style="color: red">* </span>:
-										</label>
-										<div class="col-lg-3">
-											<select name="projId" data-placeholder="Select Project"
-												id="projId"
-												class="form-control form-control-select2 select2-hidden-accessible"
-												aria-hidden="true">
-												<option value="">Please Select</option>
+									Project <span style="color: red">* </span>:
+								</label>
+								<div class="col-lg-3">
+									<select name="projId" data-placeholder="Select Project"
+										id="projId"
+										class="form-control form-control-select2 select2-hidden-accessible"
+										aria-hidden="true">
+										<option value="0">Please Select</option>
 
-												<c:forEach items="${projList}" var="projList">
-													<option selected value="${projList.projectId}">${projList.projectTitle}</option>
-												</c:forEach>
+										<c:forEach items="${projList}" var="projList">
+											<option  value="${projList.projectId}">${projList.projectTitle}</option>
+										</c:forEach>
 
-											</select> <span class="validation-invalid-label" id="error_projId"
-												style="display: none;">This field is required.</span>
-										</div>
+									</select> <span class="validation-invalid-label" id="error_projId"
+										style="display: none;">This field is required.</span>
+								</div>
 								<label class="col-form-label col-lg-2">Date Range<span
 									style="color: red">* </span>:
 								</label>
 								<div class="col-lg-3">
 									<input type="text" class="form-control daterange-basic_new "
 										name="leaveDateRange" data-placeholder="Select Date"
-										id="leaveDateRange">
-									<span class="validation-invalid-label" id="error_Range"
-										style="display: none;">This field is required.</span> <span
-										class="validation-invalid-label" id="error_insuf"
-										style="display: none;">Insufficient Leaves.</span>
+										id="leaveDateRange" value="${leaveDateRange}"> <span
+										class="validation-invalid-label" id="error_Range"
+										style="display: none;">This field is required.</span>
 
 								</div>
 
 								<input type="submit" class="btn bg-blue ml-3 legitRipple"
-									id="submtbtn" value="Submit">
-								 
+									id="submtbtn" value="Search">
+
 							</div>
 						</form>
 						<div id='loader' style='display: none;'>
@@ -168,31 +166,30 @@
 							<thead>
 								<tr class="bg-blue">
 									<th width="10%">Sr.no</th>
-
+									<th>Project Name</th>
 									<th>Work Date</th>
 									<th>Work Hrs</th>
 									<th>Log Type</th>
-									 
-
 									<th class="text-center" width="10%">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
-								<%-- <c:forEach items="${employeeInfoList}" var="employeeInfoList"
-									varStatus="count">
+								<c:forEach items="${logList}" var="logList" varStatus="count">
 									<tr>
 										<td>${count.index+1}</td>
-										<td>${employeeInfoList.empCode}</td>
-										<td>${employeeInfoList.kraCount}</td>
-										<td>${employeeInfoList.kpiCount}</td>
+										<td>${logList.projectTitle}</td>
+										<td>${logList.workDate}</td>
+										<td>${logList.workHrs}</td>
+									 
+										<td>${logList.logType==1 ? 'Routine' : logList.logType==2 ? 'Extra'  : '-'}</td>
 										<td class="text-center"><a
-											href="${pageContext.request.contextPath}/showEditWorkLog?workLogId=${employeeInfoList.empMname}&finYrId=${employeeInfoList.empDeptName}"><i
+											href="${pageContext.request.contextPath}/showEditProjHrs?workLogId=${logList.workLogId}"><i
 												class="icon-list-unordered" style="color: black;"></i></a></td>
 
 
 									</tr>
 								</c:forEach>
- --%>
+
 							</tbody>
 						</table>
 					</div>
@@ -213,90 +210,8 @@
 
 	</div>
 	<!-- /page content -->
+	
 	<script type="text/javascript">
-		function show() {
-
-			//alert("Hi View Orders  ");
-
-			var status = document.getElementById("status").value;
-			var finYrId = document.getElementById("finYrId").value;
-			//var toDate = document.getElementById("to_date").value;
-
-			//alert(compId);
-
-			var valid = true;
-
-			if (finYrId == null || finYrId == "") {
-				valid = false;
-				alert("Please Select Year");
-			}
-
-			var valid = true;
-			if (status == null || status == "") {
-				valid = false;
-				alert("Please Select Condition");
-
-				var dataTable = $('#bootstrap-data-table').DataTable();
-				dataTable.clear().draw();
-
-			}
-			$("#loader").show();
-
-			if (valid == true) {
-
-				$
-						.getJSON(
-								'${empInfoCountList}',
-								{
-									finYrId : finYrId,
-									status : status,
-									ajax : 'true',
-								},
-
-								function(data) {
-
-									var dataTable = $('#bootstrap-data-table')
-											.DataTable();
-									dataTable.clear().draw();
-
-									$
-											.each(
-													data,
-													function(i, v) {
-
-														var str = '<a href="${pageContext.request.contextPath}/showAddKra?empId='
-																+ v.empMname
-																+ '&finYrId='
-																+ finYrId
-																+ '" ><i class="icon-list-unordered"   style="color:black"></i></a>'
-
-														dataTable.row
-																.add(
-																		[
-																				i + 1,
-																				v.empCode,
-																				v.empSname
-																						+ " "
-																						+ v.empFname,
-																				v.empTypeShortName
-																						+ " "
-																						+ v.empDeptShortName
-																						+ " "
-																						+ v.empCatShortName,
-																				v.kraCount,
-																				v.kpiCount,
-																				str ])
-																.draw();
-													});
-									$("#loader").hide();
-
-								});
-
-			}//end of if valid ==true
-
-		}
-	</script>
-<script type="text/javascript">
 		// Single picker
 		$('.datepickerclass').daterangepicker({
 			singleDatePicker : true,
@@ -307,26 +222,7 @@
 			}
 		});
 
-		/* var today = new Date();
-		var last = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
-
-		var daterange = document.getElementById("yearFinalDate").value;
-
-		var date1res = daterange.split("-");
-		var lastdate = new Date(date1res[0], date1res[1] - 1, date1res[2]);
-
-		//alert(lastdate);
-		$('.daterange-basic_new').daterangepicker({
-			applyClass : 'bg-slate-600',
-			minDate : last,
-			maxDate : lastdate,
-			cancelClass : 'btn-light',
-			locale : {
-				format : 'DD-MM-YYYY',
-				separator : ' to '
-			}
-		}); */
-
+		 
 		$('.daterange-basic_new').daterangepicker({
 			applyClass : 'bg-slate-600',
 			cancelClass : 'btn-light',

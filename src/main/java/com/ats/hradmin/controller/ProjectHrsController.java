@@ -21,10 +21,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ats.hradmin.common.AcessController;
 import com.ats.hradmin.common.Constants;
+import com.ats.hradmin.common.DateConvertor;
 import com.ats.hradmin.common.FormValidation;
 import com.ats.hradmin.common.HoursConversion;
 import com.ats.hradmin.model.AccessRightModule;
-
+import com.ats.hradmin.model.GetEmpWorkLog;
 import com.ats.hradmin.model.GetProjectHeader;
 import com.ats.hradmin.model.Info;
 import com.ats.hradmin.model.LoginResponse;
@@ -35,8 +36,9 @@ import com.ats.hradmin.model.WorkType;
 @Controller
 @Scope("session")
 public class ProjectHrsController {
-	
-	WorkType editwork =new WorkType();
+
+	WorkType editwork = new WorkType();
+	WorkLog editworkLog = new WorkLog();
 	// *****************************Work type************************
 
 	@RequestMapping(value = "/showAddWorkType", method = RequestMethod.GET)
@@ -171,17 +173,16 @@ public class ProjectHrsController {
 
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 			map.add("workTypeId", Integer.parseInt(workTypeId));
-			  editwork = Constants.getRestTemplate()
-					.postForObject(Constants.url + "/getWorkTypeById",map, WorkType.class);
- 			model.addObject("editwork", editwork);
+			editwork = Constants.getRestTemplate().postForObject(Constants.url + "/getWorkTypeById", map,
+					WorkType.class);
+			model.addObject("editwork", editwork);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return model;
 	}
-	
-	
+
 	@RequestMapping(value = "/submitEditWorkType", method = RequestMethod.POST)
 	public String submitEditWorkType(HttpServletRequest request, HttpServletResponse response) {
 
@@ -212,7 +213,6 @@ public class ProjectHrsController {
 			}
 			if (ret == false) {
 
-			 
 				editwork.setWorkTypeName(typeName);
 				editwork.setShortName(typeShortName);
 				editwork.setWorkTypeDesc(remark);
@@ -237,7 +237,6 @@ public class ProjectHrsController {
 		return "redirect:/showWorkTypeList";
 	}
 
-	
 	@RequestMapping(value = "/deleteWorkType", method = RequestMethod.GET)
 	public String deleteWorkType(HttpServletRequest request, HttpServletResponse response) {
 
@@ -255,7 +254,7 @@ public class ProjectHrsController {
 			}
 
 			else {
-				a="redirect:/showWorkTypeList";
+				a = "redirect:/showWorkTypeList";
 			}
 			String base64encodedString = request.getParameter("workTypeId");
 			String workTypeId = FormValidation.DecodeKey(base64encodedString);
@@ -276,7 +275,6 @@ public class ProjectHrsController {
 		return a;
 	}
 
-
 	// *****************************Add project hrs************************
 
 	@RequestMapping(value = "/showAddProjHrs", method = RequestMethod.GET)
@@ -288,9 +286,9 @@ public class ProjectHrsController {
 					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
 			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
 			model.addObject("projList", projectHeaderList);
-			
-			WorkType[] workTypeListArr = Constants.getRestTemplate()
-					.getForObject(Constants.url + "/getWorkTypeList", WorkType[].class);
+
+			WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
+					WorkType[].class);
 			List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
 			model.addObject("workTypeList", workTypeList);
 
@@ -299,8 +297,113 @@ public class ProjectHrsController {
 		}
 		return model;
 	}
-	
-	
+
+	@RequestMapping(value = "/showEditProjHrs", method = RequestMethod.GET)
+	public ModelAndView showEditProjHrs(HttpServletRequest request, HttpServletResponse response) {
+
+		ModelAndView model = new ModelAndView("project/edit_proj_hrs");
+
+		try {
+
+			String workLogId = request.getParameter("workLogId");
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("workLogId", workLogId);
+			editworkLog = Constants.getRestTemplate().postForObject(Constants.url + "/getWorkLogById", map,
+					WorkLog.class);
+			
+			editworkLog.setWorkHrs(HoursConversion.convertMinToHours(editworkLog.getWorkHrs()));
+			model.addObject("editworkLog", editworkLog);
+
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+
+			WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
+					WorkType[].class);
+			List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
+			model.addObject("workTypeList", workTypeList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+
+	@RequestMapping(value = "/submitEditProjHrs", method = RequestMethod.POST)
+	public String submitEditProjHrs(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			Date date = new Date();
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			String projId = request.getParameter("projId");
+			String workTypeId = request.getParameter("workTypeId");
+			String typeId = request.getParameter("TypeId");
+			String workDate = request.getParameter("workDate");
+			String projectHrs = request.getParameter("projectHrs");
+			String remark = null;
+			try {
+				remark = request.getParameter("woDesc");
+			} catch (Exception e) {
+				remark = "";
+			}
+
+			Boolean ret = false;
+
+			if (FormValidation.Validaton(projId, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(workTypeId, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(workDate, "") == true) {
+
+				ret = true;
+			}
+			if (FormValidation.Validaton(projectHrs, "") == true) {
+
+				ret = true;
+			}
+
+			if (ret == false) {
+
+				editworkLog.setWorkHrs(HoursConversion.convertHoursToMin(projectHrs));
+				editworkLog.setEmpId(userObj.getUserId());
+
+				editworkLog.setWorkTypeId(Integer.parseInt(workTypeId));
+				editworkLog.setProjectId(Integer.parseInt(projId));
+				editworkLog.setLogType(Integer.parseInt(typeId));
+				editworkLog.setWorkDate(workDate);
+				editworkLog.setWorkDesc(remark);
+				editworkLog.setExFloat1(1);
+				editworkLog.setIsActive(1);
+				editworkLog.setDelStatus(1);
+				editworkLog.setMakerUserId(userObj.getUserId());
+				editworkLog.setUpdateDatetime(sf.format(date));
+				editworkLog.setDelStatus(1);
+				editworkLog.setIsActive(1);
+				editworkLog.setExInt1(0);
+				editworkLog.setExVar1("NA");
+				editworkLog.setExVar2("NA");
+
+				WorkLog res = Constants.getRestTemplate().postForObject(Constants.url + "/saveWorkLog", editworkLog,
+						WorkLog.class);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "redirect:/showProjHrsListToEmp";
+	}
+
 	@RequestMapping(value = "/submitInsertProjHrs", method = RequestMethod.POST)
 	public String submitInsertProjHrs(HttpServletRequest request, HttpServletResponse response) {
 
@@ -315,7 +418,7 @@ public class ProjectHrsController {
 			String typeId = request.getParameter("TypeId");
 			String workDate = request.getParameter("workDate");
 			String projectHrs = request.getParameter("projectHrs");
-  			String remark = null;
+			String remark = null;
 			try {
 				remark = request.getParameter("woDesc");
 			} catch (Exception e) {
@@ -345,14 +448,15 @@ public class ProjectHrsController {
 
 				WorkLog workType = new WorkLog();
 				workType.setWorkHrs(HoursConversion.convertHoursToMin(projectHrs));
- 				workType.setEmpId(userObj.getUserId());;
+				workType.setEmpId(userObj.getUserId());
+				;
 				workType.setWorkTypeId(Integer.parseInt(workTypeId));
 				workType.setProjectId(Integer.parseInt(projId));
 				workType.setLogType(Integer.parseInt(typeId));
 				workType.setWorkDate(workDate);
 				workType.setWorkDesc(remark);
- 				workType.setExFloat1(1);
-  				workType.setIsActive(1);
+				workType.setExFloat1(1);
+				workType.setIsActive(1);
 				workType.setDelStatus(1);
 				workType.setMakerUserId(userObj.getUserId());
 				workType.setUpdateDatetime(sf.format(date));
@@ -371,36 +475,58 @@ public class ProjectHrsController {
 			e.printStackTrace();
 		}
 
-		return "redirect:/showWorkTypeList";
+		return "redirect:/showProjHrsListToEmp";
 	}
+
 	@RequestMapping(value = "/showProjHrsListToEmp", method = RequestMethod.GET)
 	public ModelAndView showProjHrsListToEmp(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView model = new ModelAndView("project/proj_hrs_list");
+		String[] arrOfStr = null;
+		String leaveDateRange = null;
+		int projId = 0;
+		String fromDate = null;
+		String toDate = null;
+		HttpSession session = request.getSession();
+		LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
 
+		if (request.getParameter("leaveDateRange") != null && request.getParameter("leaveDateRange") != "") {
+
+			leaveDateRange = request.getParameter("leaveDateRange");
+			arrOfStr = leaveDateRange.split("to", 2);
+			fromDate = DateConvertor.convertToYMD(arrOfStr[0].toString().trim());
+			toDate = DateConvertor.convertToYMD(arrOfStr[1].toString().trim());
+			model.addObject("leaveDateRange", leaveDateRange);
+
+		} else {
+			fromDate = "";
+			toDate = "";
+		}
+
+		if (request.getParameter("projId") != "" && request.getParameter("projId") != null) {
+			projId = Integer.parseInt(request.getParameter("projId"));
+
+		} else {
+			projId = 0;
+		}
+		System.out.println("leaveDateRange" + leaveDateRange);
 		try {
 			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
 					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
 			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
 			model.addObject("projList", projectHeaderList);
-			
-			 System.out.println("project "+projectHeaderList.toString());
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return model;
-	}
-	
-	@RequestMapping(value = "/showEditProjHrs", method = RequestMethod.GET)
-	public ModelAndView showEditProjHrs(HttpServletRequest request, HttpServletResponse response) {
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("empId", userObj.getUserId());
+			map.add("projId", projId);
+			map.add("fromDate", fromDate);
+			map.add("toDate", toDate);
 
-		ModelAndView model = new ModelAndView("project/edit_proj_hrs");
+			GetEmpWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getEmpWorkLogByProjId", map, GetEmpWorkLog[].class);
+			List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));
+			model.addObject("logList", projectHeaderList1);
 
-		try {
-			GetProjectHeader[] proHeaderArray = Constants.getRestTemplate()
-					.getForObject(Constants.url + "/getProjectAllListByCompanyId", GetProjectHeader[].class);
-			List<GetProjectHeader> projectHeaderList = new ArrayList<GetProjectHeader>(Arrays.asList(proHeaderArray));
-			model.addObject("projList", projectHeaderList);
+			System.out.println("project " + projectHeaderList.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
