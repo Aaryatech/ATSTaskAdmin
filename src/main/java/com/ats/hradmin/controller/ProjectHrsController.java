@@ -3,6 +3,7 @@ package com.ats.hradmin.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import com.ats.hradmin.common.DateConvertor;
 import com.ats.hradmin.common.FormValidation;
 import com.ats.hradmin.common.HoursConversion;
 import com.ats.hradmin.model.AccessRightModule;
+import com.ats.hradmin.model.EmployeeInfo;
+import com.ats.hradmin.model.GetEmpLogGrpByDate;
 import com.ats.hradmin.model.GetEmpWorkLog;
 import com.ats.hradmin.model.GetProjectHeader;
 import com.ats.hradmin.model.Info;
@@ -311,7 +314,7 @@ public class ProjectHrsController {
 			map.add("workLogId", workLogId);
 			editworkLog = Constants.getRestTemplate().postForObject(Constants.url + "/getWorkLogById", map,
 					WorkLog.class);
-			
+
 			editworkLog.setWorkHrs(HoursConversion.convertMinToHours(editworkLog.getWorkHrs()));
 			model.addObject("editworkLog", editworkLog);
 
@@ -374,7 +377,7 @@ public class ProjectHrsController {
 			if (ret == false) {
 
 				editworkLog.setWorkHrs(HoursConversion.convertHoursToMin(projectHrs));
-				editworkLog.setEmpId(userObj.getUserId());
+				editworkLog.setEmpId(userObj.getEmpId()); // change by Sachin 14-10-2019
 
 				editworkLog.setWorkTypeId(Integer.parseInt(workTypeId));
 				editworkLog.setProjectId(Integer.parseInt(projId));
@@ -448,7 +451,7 @@ public class ProjectHrsController {
 
 				WorkLog workType = new WorkLog();
 				workType.setWorkHrs(HoursConversion.convertHoursToMin(projectHrs));
-				workType.setEmpId(userObj.getUserId());
+				workType.setEmpId(userObj.getEmpId());
 				;
 				workType.setWorkTypeId(Integer.parseInt(workTypeId));
 				workType.setProjectId(Integer.parseInt(projId));
@@ -516,7 +519,7 @@ public class ProjectHrsController {
 			model.addObject("projList", projectHeaderList);
 
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-			map.add("empId", userObj.getUserId());
+			map.add("empId", userObj.getEmpId()); // change by sachin
 			map.add("projId", projId);
 			map.add("fromDate", fromDate);
 			map.add("toDate", toDate);
@@ -534,4 +537,199 @@ public class ProjectHrsController {
 		return model;
 	}
 
+	// Sachin 14-10-2019
+
+	@RequestMapping(value = "/showProjHrsToAdm", method = RequestMethod.GET)
+	public ModelAndView showProjHrsToAdm(HttpServletRequest request, HttpServletResponse response) {
+
+		System.err.println("Hi");
+
+		ModelAndView model = new ModelAndView("project/show_proj_hr_adm");
+		String[] arrOfStr = null;
+		String leaveDateRange = null;
+		int projId = 0;
+		String fromDate = null;
+		String toDate = null;
+		HttpSession session = request.getSession();
+		LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+		String empIdList;
+		if (request.getParameter("leaveDateRange") != null && request.getParameter("leaveDateRange") != "") {
+			System.err.println("Hi 1");
+			leaveDateRange = request.getParameter("leaveDateRange");
+			arrOfStr = leaveDateRange.split("to", 2);
+			fromDate = DateConvertor.convertToYMD(arrOfStr[0].toString().trim());
+			toDate = DateConvertor.convertToYMD(arrOfStr[1].toString().trim());
+
+			String[] locId2 = request.getParameterValues("empId");
+
+			StringBuilder sb = new StringBuilder();
+			List<Integer> empIds = new ArrayList<Integer>();
+			for (int i = 0; i < locId2.length; i++) {
+				sb = sb.append(locId2[i] + ",");
+				try {
+					empIds.add(Integer.parseInt(locId2[i]));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			empIdList = sb.toString();
+			empIdList = empIdList.substring(0, empIdList.length() - 1);
+
+			model.addObject("leaveDateRange", leaveDateRange);
+			model.addObject("empIds", empIds);
+
+		} else {
+
+			Calendar c = Calendar.getInstance(); // this takes current date
+
+			System.out.println(c.getTime());
+
+			Date toDate1 = c.getTime();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+			toDate = sdf.format(toDate1);
+
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			Date fromDate1 = c.getTime();
+
+			fromDate = sdf.format(fromDate1);
+
+			leaveDateRange = fromDate.concat(" to ").concat(toDate);
+
+			model.addObject("leaveDateRange", leaveDateRange);
+
+			empIdList = "ALL";
+
+			fromDate = DateConvertor.convertToYMD(fromDate);
+			toDate = DateConvertor.convertToYMD(toDate);
+
+		}
+
+		try {
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("empIdList", empIdList); // change by sachin
+			// map.add("projId", projId);
+			map.add("fromDate", fromDate);
+			map.add("toDate", toDate);
+
+			GetEmpWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getWorkLogAdm", map, GetEmpWorkLog[].class);
+			List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));
+			model.addObject("logList", projectHeaderList1);
+
+			map = new LinkedMultiValueMap<>();
+			map.add("locationId", userObj.getLocationIds());
+
+			EmployeeInfo[] employeeInfo = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getEmpInfoByLocId", map, EmployeeInfo[].class);
+			List<EmployeeInfo> employeeInfoList = new ArrayList<EmployeeInfo>(Arrays.asList(employeeInfo));
+
+			model.addObject("employeeInfoList", employeeInfoList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+
+	
+	
+	
+	
+	@RequestMapping(value = "/showProjHrsDatewise", method = RequestMethod.GET)
+	public ModelAndView showProjHrsDatewise(HttpServletRequest request, HttpServletResponse response) {
+
+		System.err.println("Hi showProjHrsDatewise");
+
+		ModelAndView model = new ModelAndView("project/show_proj_hrs_dateEmpGrp");
+		String[] arrOfStr = null;
+		String leaveDateRange = null;
+		int projId = 0;
+		String fromDate = null;
+		String toDate = null;
+		HttpSession session = request.getSession();
+		LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+		String empIdList;
+		if (request.getParameter("leaveDateRange") != null && request.getParameter("leaveDateRange") != "") {
+			System.err.println("Hi 1");
+			leaveDateRange = request.getParameter("leaveDateRange");
+			arrOfStr = leaveDateRange.split("to", 2);
+			fromDate = DateConvertor.convertToYMD(arrOfStr[0].toString().trim());
+			toDate = DateConvertor.convertToYMD(arrOfStr[1].toString().trim());
+
+			String[] locId2 = request.getParameterValues("empId");
+
+			StringBuilder sb = new StringBuilder();
+			List<Integer> empIds = new ArrayList<Integer>();
+			for (int i = 0; i < locId2.length; i++) {
+				sb = sb.append(locId2[i] + ",");
+				try {
+					empIds.add(Integer.parseInt(locId2[i]));
+				} catch (Exception e) {
+				
+				}
+			}
+			empIdList = sb.toString();
+			empIdList = empIdList.substring(0, empIdList.length() - 1);
+
+			model.addObject("leaveDateRange", leaveDateRange);
+			model.addObject("empIds", empIds);
+
+		} else {
+
+			Calendar c = Calendar.getInstance(); // this takes current date
+
+			System.out.println(c.getTime());
+
+			Date toDate1 = c.getTime();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+			toDate = sdf.format(toDate1);
+
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			Date fromDate1 = c.getTime();
+
+			fromDate = sdf.format(fromDate1);
+
+			leaveDateRange = fromDate.concat(" to ").concat(toDate);
+
+			model.addObject("leaveDateRange", leaveDateRange);
+
+			empIdList = "ALL";
+
+			fromDate = DateConvertor.convertToYMD(fromDate);
+			toDate = DateConvertor.convertToYMD(toDate);
+
+		}
+
+		try {
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("empIdList", empIdList); // change by sachin
+			// map.add("projId", projId);
+			map.add("fromDate", fromDate);
+			map.add("toDate", toDate);
+
+			GetEmpLogGrpByDate[] proHeaderArray1 = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getWorkLogGrpByDate", map, GetEmpLogGrpByDate[].class);
+			List<GetEmpLogGrpByDate> projectHeaderList1 = new ArrayList<GetEmpLogGrpByDate>(Arrays.asList(proHeaderArray1));
+			model.addObject("logList", projectHeaderList1);
+
+			map = new LinkedMultiValueMap<>();
+			map.add("locationId", userObj.getLocationIds());
+
+			EmployeeInfo[] employeeInfo = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getEmpInfoByLocId", map, EmployeeInfo[].class);
+			List<EmployeeInfo> employeeInfoList = new ArrayList<EmployeeInfo>(Arrays.asList(employeeInfo));
+
+			model.addObject("employeeInfoList", employeeInfoList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
 }

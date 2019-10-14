@@ -174,9 +174,15 @@
 
 			</c:forEach>
 
-			<%-- <li class="nav-item"><a class="nav-link"
-				href="${pageContext.request.contextPath}/logout"><i
-					class="icon-width"></i> <span>Logout</span></a></li> --%>
+			<li class="nav-item"><a class="nav-link"
+				href="${pageContext.request.contextPath}/showProjHrsToAdm"><i
+					class="icon-width"></i> <span>Project Hours</span></a></li>
+					
+					
+					<li class="nav-item"><a class="nav-link"
+				href="${pageContext.request.contextPath}/showProjHrsDatewise"><i
+					class="icon-width"></i> <span>EMP Hours Datewise</span></a></li>
+					
 			<!-- /main -->
 
 
