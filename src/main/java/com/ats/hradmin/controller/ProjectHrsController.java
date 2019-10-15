@@ -289,6 +289,14 @@ public class ProjectHrsController {
 					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
 			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
 			model.addObject("projList", projectHeaderList);
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+			//toDate = sdf.format(toDate1);
+			String curDate=sdf.format(new Date());
+			
+			System.err.println("curDate " +curDate);
+			model.addObject("curDate", curDate);
 
 			WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
 					WorkType[].class);
@@ -316,6 +324,8 @@ public class ProjectHrsController {
 					WorkLog.class);
 
 			editworkLog.setWorkHrs(HoursConversion.convertMinToHours(editworkLog.getWorkHrs()));
+			
+			editworkLog.setWorkDate(DateConvertor.convertToDMY(editworkLog.getWorkDate()));
 			model.addObject("editworkLog", editworkLog);
 
 			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
@@ -382,7 +392,7 @@ public class ProjectHrsController {
 				editworkLog.setWorkTypeId(Integer.parseInt(workTypeId));
 				editworkLog.setProjectId(Integer.parseInt(projId));
 				editworkLog.setLogType(Integer.parseInt(typeId));
-				editworkLog.setWorkDate(workDate);
+				editworkLog.setWorkDate(DateConvertor.convertToYMD(workDate));
 				editworkLog.setWorkDesc(remark);
 				editworkLog.setExFloat1(1);
 				editworkLog.setIsActive(1);
@@ -456,7 +466,7 @@ public class ProjectHrsController {
 				workType.setWorkTypeId(Integer.parseInt(workTypeId));
 				workType.setProjectId(Integer.parseInt(projId));
 				workType.setLogType(Integer.parseInt(typeId));
-				workType.setWorkDate(workDate);
+				workType.setWorkDate(DateConvertor.convertToYMD(workDate));
 				workType.setWorkDesc(remark);
 				workType.setExFloat1(1);
 				workType.setIsActive(1);

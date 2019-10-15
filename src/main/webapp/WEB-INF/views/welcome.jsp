@@ -191,8 +191,8 @@
 										</div>
 
 										<div class="card-body" align="left">
-											Pending Leave
-											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve}</h4>
+											Pending Leaves 
+											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve} (Days)</h4>
 										</div>
 									</div>
 								</div>

@@ -332,10 +332,17 @@
 	</script>
 	<script type="text/javascript">
 		// Single picker
+		//var x = "${curDate}";
+		    var start = moment().subtract(4, 'days');
+		    var end = moment();
+		
 		$('.datepickerclass').daterangepicker({
 			singleDatePicker : true,
 			selectMonths : true,
 			selectYears : true,
+			minDate: start,
+			maxDate: end,
+		    
 			locale : {
 				format : 'DD-MM-YYYY'
 			}
