@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ats.hradmin.common.Constants;
+import com.ats.hradmin.common.DateConvertor;
 import com.ats.hradmin.common.FormValidation;
 import com.ats.hradmin.common.VpsImageUpload;
 import com.ats.hradmin.leave.model.CalenderYear;
@@ -41,6 +43,7 @@ import com.ats.hradmin.model.AccessRightModule;
 import com.ats.hradmin.model.AuthorityInformation;
 import com.ats.hradmin.model.Company;
 import com.ats.hradmin.model.EmployeeInfo;
+import com.ats.hradmin.model.GetEmpShortLeaves;
 import com.ats.hradmin.model.GetUserData;
 import com.ats.hradmin.model.Info;
 import com.ats.hradmin.model.LoginResponse;
@@ -304,6 +307,34 @@ public class HomeController {
 			 * AuthorityInformation.class); mav.addObject("authorityInformation",
 			 * authorityInformation);
 			 */
+			
+			
+			MultiValueMap<String, Object> map  = new LinkedMultiValueMap<>();
+				map.add("empIdList", "ALL"); // change by sachin
+				// map.add("projId", projId);
+				
+				Calendar c = Calendar.getInstance(); // this takes current date
+
+				System.out.println(c.getTime());
+
+				Date toDate1 = c.getTime();
+
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+				String toDate = sdf.format(toDate1);
+
+				c.set(Calendar.DAY_OF_MONTH, 1);
+				Date fromDate1 = c.getTime();
+
+				String fromDate = sdf.format(fromDate1);
+				
+				map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+				map.add("toDate", DateConvertor.convertToYMD(toDate));
+
+				GetEmpShortLeaves[] proHeaderArray1 = Constants.getRestTemplate()
+						.postForObject(Constants.url + "/getShortLeaveList", map, GetEmpShortLeaves[].class);
+				List<GetEmpShortLeaves> projectHeaderList1 = new ArrayList<GetEmpShortLeaves>(Arrays.asList(proHeaderArray1));
+				mav.addObject("shortLeaveList", projectHeaderList1);
 
 		} catch (Exception e) {
 			e.printStackTrace();

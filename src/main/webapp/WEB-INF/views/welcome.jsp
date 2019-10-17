@@ -116,24 +116,25 @@
 							</div>
 						</c:if> --%>
 
-						<div class="row">
+
+<!-- Extra large table -->
+				<div class="card">
+					<div class="card-header header-elements-inline">
+						<h5 class="card-title">Project Hours</h5>
+						<div class="header-elements">
+							<div class="list-icons">
+		                		<a class="list-icons-item" data-action="collapse"></a>
+		                		<a class="list-icons-item" data-action="remove"></a>
+		                	</div>
+	                	</div>
+					</div>
+
+					<div class="card-body">
+					
+					<div class="row">
 
 							<c:forEach items="${projHrsList}" var="projList">
 								<div class="col-sm-12 col-md-4">
-									<%-- <div class="card   ">
-										<div class="card-body pb-0" align="center">
-
-											<h4 class="mb-0">
-												<span class="count"  ><i
-													class="fa fa-task">${projList.workHrs}</i></span>
-											</h4>
-											<p   >
-												<font  >${projList.projectTitle}</font>
-											</p>
-
-										</div>
-									</div>
- --%>
 									<div class="card">
 										<div
 											class="card-header bg-primary text-white header-elements-inline">
@@ -156,7 +157,28 @@
 								</div>
 							</c:forEach>
 						</div>
+					
+					
+					</div>
+				</div>
+				<!-- /extra large table -->
+
+
+
+
 						
+						<div class="card">
+					<div class="card-header header-elements-inline">
+						<h5 class="card-title">Leaves Pending</h5>
+						<div class="header-elements">
+							<div class="list-icons">
+		                		<a class="list-icons-item" data-action="collapse"></a>
+		                		<a class="list-icons-item" data-action="remove"></a>
+		                	</div>
+	                	</div>
+					</div>
+
+					<div class="card-body">
 						
 						
 							<div class="row">
@@ -164,20 +186,6 @@
 							<c:forEach items="${employeeInfoList}" var="leaveHistoryList">
 								
 								<div class="col-sm-12 col-md-4">
-									<%-- <div class="card   ">
-										<div class="card-body pb-0" align="center">
-
-											<h4 class="mb-0">
-												<span class="count"  ><i
-													class="fa fa-task">${projList.workHrs}</i></span>
-											</h4>
-											<p   >
-												<font  >${projList.projectTitle}</font>
-											</p>
-
-										</div>
-									</div>
- --%>
 									<div class="card">
 										<div
 											class="card-header bg-success text-white header-elements-inline">
@@ -198,7 +206,48 @@
 								</div>
 							</c:forEach>
 						</div>
+						</div>
+						</div>
 						
+						<div class="card">
+					<div class="card-header header-elements-inline">
+						<h5 class="card-title">Short Leaves Used</h5>
+						<div class="header-elements">
+							<div class="list-icons">
+		                		<a class="list-icons-item" data-action="collapse"></a>
+		                		<a class="list-icons-item" data-action="remove"></a>
+		                	</div>
+	                	</div>
+					</div>
+
+					<div class="card-body">
+						
+						<div class="row">
+
+							<c:forEach items="${shortLeaveList}" var="slList">
+								<div class="col-sm-12 col-md-4">
+									<div class="card">
+										<div
+											class="card-header bg-dark text-white header-elements-inline">
+											<h6 class="card-title">${slList.empFname} ${slList.empSname}</h6>
+											<div class="header-elements">
+												<div class="list-icons">
+													<a class="list-icons-item" data-action="collapse"></a> <a
+														class="list-icons-item" data-action="remove"></a>
+												</div>
+											</div>
+										</div>
+
+										<div class="card-body" align="left">
+											Short Leaves
+											<h4>${slList.shLeaveCount}</h4>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+						</div>
+						</div>
 						
 						<!-- Current server load -->
 						<!-- <div class="card bg-pink-400">

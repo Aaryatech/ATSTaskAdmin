@@ -183,6 +183,14 @@
 				href="${pageContext.request.contextPath}/showProjHrsDatewise"><i
 					class="icon-width"></i> <span>EMP Hours Datewise</span></a></li>
 					
+					
+					<li class="nav-item"><a class="nav-link"
+				href="${pageContext.request.contextPath}/showAddShortLeave"><i
+					class="icon-width"></i> <span>Add Short Leave</span></a></li>
+					
+					<li class="nav-item"><a class="nav-link"
+				href="${pageContext.request.contextPath}/showSLListToEmp"><i
+					class="icon-width"></i> <span>View Short Leave</span></a></li>
 			<!-- /main -->
 
 
