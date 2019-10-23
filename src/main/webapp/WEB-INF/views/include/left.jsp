@@ -174,7 +174,7 @@
 
 			</c:forEach>
 
-			<li class="nav-item"><a class="nav-link"
+			<%-- <li class="nav-item"><a class="nav-link"
 				href="${pageContext.request.contextPath}/showProjHrsToAdm"><i
 					class="icon-width"></i> <span>Project Hours</span></a></li>
 					
@@ -190,7 +190,7 @@
 					
 					<li class="nav-item"><a class="nav-link"
 				href="${pageContext.request.contextPath}/showSLListToEmp"><i
-					class="icon-width"></i> <span>View Short Leave</span></a></li>
+					class="icon-width"></i> <span>View Short Leave</span></a></li> --%>
 			<!-- /main -->
 
 
