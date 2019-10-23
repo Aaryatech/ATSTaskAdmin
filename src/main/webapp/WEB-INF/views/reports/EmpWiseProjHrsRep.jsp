@@ -261,9 +261,10 @@
 				dataTable.clear().draw();
 
 			}
-			$("#loader").show();
+		
 
 			if (valid == true) {
+				$("#loader").show();
 
 				$.getJSON('${empExtraWorkHrs}', {
 					empId : str,

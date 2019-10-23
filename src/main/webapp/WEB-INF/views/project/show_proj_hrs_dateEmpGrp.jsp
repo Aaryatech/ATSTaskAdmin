@@ -121,7 +121,7 @@
 
 						<form
 							action="${pageContext.request.contextPath}/showProjHrsDatewise"
-							id="submitInsertLeave" method="GET">
+							id="submitInsert" method="GET">
 
 							<div class="form-group row">
 
@@ -155,7 +155,7 @@
 											${empInfo.empFname} ${empInfo.empMname}</option>
 								</c:if>	
 									</c:forEach>
-								</select> <span class="validation-invalid-label" id="error_empId"
+								</select> <span class="validation-invalid-label" id="error_emp"
 									style="display: none;">This field is required.</span>
 								</div>
 								</div>
@@ -256,6 +256,6 @@
 			}
 		});
 	</script>
-
+	 
 </body>
 </html>
