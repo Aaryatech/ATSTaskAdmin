@@ -517,10 +517,12 @@ public class ProjectHrsController {
 
 		if (request.getParameter("projId") != "" && request.getParameter("projId") != null) {
 			projId = Integer.parseInt(request.getParameter("projId"));
+			
 
 		} else {
 			projId = 0;
 		}
+		model.addObject("projId", projId);
 		System.out.println("leaveDateRange" + leaveDateRange);
 		try {
 			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()

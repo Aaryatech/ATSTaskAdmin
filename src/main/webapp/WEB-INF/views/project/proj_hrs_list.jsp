@@ -137,7 +137,15 @@
 										<option value="0">Please Select</option>
 
 										<c:forEach items="${projList}" var="projList">
-											<option  value="${projList.projectId}">${projList.projectTitle}</option>
+
+											<c:choose>
+												<c:when test="${projList.projectId==projId}">
+													<option selected value="${projList.projectId}">${projList.projectTitle}</option>
+												</c:when>
+												<c:otherwise>
+													<option value="${projList.projectId}">${projList.projectTitle}</option>
+												</c:otherwise>
+											</c:choose>
 										</c:forEach>
 
 									</select> <span class="validation-invalid-label" id="error_projId"
@@ -186,7 +194,7 @@
 										<td>${logList.projectTitle}</td>
 										<td>${logList.workDate}</td>
 										<td>${logList.workHrs}</td>
-									 
+
 										<td>${logList.logType==1 ? 'Routine' : logList.logType==2 ? 'Extra'  : '-'}</td>
 										<td class="text-center"><a
 											href="${pageContext.request.contextPath}/showEditProjHrs?workLogId=${logList.workLogId}"><i
@@ -216,7 +224,7 @@
 
 	</div>
 	<!-- /page content -->
-	
+
 	<script type="text/javascript">
 		// Single picker
 		$('.datepickerclass').daterangepicker({
@@ -228,7 +236,6 @@
 			}
 		});
 
-		 
 		$('.daterange-basic_new').daterangepicker({
 			applyClass : 'bg-slate-600',
 			cancelClass : 'btn-light',
