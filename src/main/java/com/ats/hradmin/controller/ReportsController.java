@@ -247,7 +247,7 @@ public class ReportsController {
 	@RequestMapping(value = "/showExtraHrsRep", method = RequestMethod.POST)
 	public void showExtraHrsRep(HttpServletRequest request, HttpServletResponse response) {
 		List<EmpWorkHrsRep> progList = new ArrayList<EmpWorkHrsRep>();
-		String reportName = "Employee Leave History Report";
+		String reportName = "Employee Extra Hours Report";
 		try {
 
 			HttpSession session = request.getSession();

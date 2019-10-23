@@ -236,8 +236,8 @@
 											Description : </label>
 										<div class="col-lg-10">
 											<textarea rows="3" cols="3" class="form-control"
-												value="${editworkLog.workDesc}" placeholder="Any Remark"
-												onchange="trim(this)" id="woDesc" name="woDesc"></textarea>
+											  placeholder="Any Remark"
+												onchange="trim(this)" id="woDesc" name="woDesc">${editworkLog.workDesc}</textarea>
 
 										</div>
 									</div>
