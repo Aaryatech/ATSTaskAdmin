@@ -49,10 +49,7 @@
 					</div>
 
 
-					<div class="breadcrumb justify-content-center">
-						
-
-					</div>
+					<div class="breadcrumb justify-content-center"></div>
 
 					<%-- <div class="breadcrumb justify-content-center">
 						<a href="${pageContext.request.contextPath}/employeeAdd"
@@ -119,8 +116,7 @@
 							}
 						%>
 
-						<form
-							action="${pageContext.request.contextPath}/showProjHrsToAdm"
+						<form action="${pageContext.request.contextPath}/showProjHrsToAdm"
 							id="submitInsertLeave" method="GET">
 
 							<div class="form-group row">
@@ -130,37 +126,38 @@
 								</label>
 								<div class="col-lg-10">
 									<select name="empId" data-placeholder="Select Employee"
-									id="empId" multiple="multiple"
-									class="form-control form-control-select2 select2-hidden-accessible"
-									tabindex="-1" aria-hidden="true">
-									<option disabled  value="">Select Employee</option>
-									<option value="ALL">ALL Employee</option>
-									<c:forEach items="${employeeInfoList}" var="empInfo">
-									<c:set var="finded" value="0"></c:set>
-									
-								<c:forEach items="${empIds}" var="empIds">
-								
-								<c:choose><c:when test="${empIds==empInfo.empId}">
-								<c:set var="finded" value="1"></c:set>
-								</c:when>
-								
-								</c:choose>
-								</c:forEach>
-								<c:if test="${finded==1}">
-								<option value="${empInfo.empId}" selected>${empInfo.empSname}
-											${empInfo.empFname} ${empInfo.empMname}</option>
-								</c:if>
-									<c:if test="${finded==0}">
-								<option value="${empInfo.empId}">${empInfo.empSname}
-											${empInfo.empFname} ${empInfo.empMname}</option>
-								</c:if>	
-									</c:forEach>
-								</select> <span class="validation-invalid-label" id="error_empId"
-									style="display: none;">This field is required.</span>
+										id="empId" multiple="multiple"
+										class="form-control form-control-select2 select2-hidden-accessible"
+										tabindex="-1" aria-hidden="true">
+										<option disabled value="">Select Employee</option>
+										<option value="ALL">ALL Employee</option>
+										<c:forEach items="${employeeInfoList}" var="empInfo">
+											<c:set var="finded" value="0"></c:set>
+
+											<c:forEach items="${empIds}" var="empIds">
+
+												<c:choose>
+													<c:when test="${empIds==empInfo.empId}">
+														<c:set var="finded" value="1"></c:set>
+													</c:when>
+
+												</c:choose>
+											</c:forEach>
+											<c:if test="${finded==1}">
+												<option value="${empInfo.empId}" selected>${empInfo.empSname}
+													${empInfo.empFname} ${empInfo.empMname}</option>
+											</c:if>
+											<c:if test="${finded==0}">
+												<option value="${empInfo.empId}">${empInfo.empSname}
+													${empInfo.empFname} ${empInfo.empMname}</option>
+											</c:if>
+										</c:forEach>
+									</select> <span class="validation-invalid-label" id="error_empId"
+										style="display: none;">This field is required.</span>
 								</div>
-								</div>
-								<div class="form-group row">
-								
+							</div>
+							<div class="form-group row">
+
 								<label class="col-form-label col-lg-2">Date Range<span
 									style="color: red">* </span>:
 								</label>
@@ -195,6 +192,8 @@
 									<th>Work Date</th>
 									<th>Work Hrs</th>
 									<th>Log Type</th>
+									<th>Description</th>
+
 									<!-- <th class="text-center" width="10%">Actions</th> -->
 								</tr>
 							</thead>
@@ -202,12 +201,13 @@
 								<c:forEach items="${logList}" var="logList" varStatus="count">
 									<tr>
 										<td>${count.index+1}</td>
-										<td>${logList.empFname} ${logList.empSname}</td>
+										<td>${logList.empFname}${logList.empSname}</td>
 										<td>${logList.projectTitle}</td>
 										<td>${logList.workDate}</td>
 										<td>${logList.workHrs}</td>
-									 
-										<td>${logList.logType==1 ? 'Routine' : logList.logType==2 ? 'Extra'  : '-'}</td>
+										<td>${logList.logType==1 ? 'Regular' : logList.logType==2 ? 'Extra'  : '-'}</td>
+										<td>${logList.workDesc}</td>
+
 										<%-- <td class="text-center"><a
 											href="${pageContext.request.contextPath}/showEditProjHrs?workLogId=${logList.workLogId}"><i
 												class="icon-pencil7" style="color: black;"></i></a></td> --%>
@@ -236,7 +236,7 @@
 
 	</div>
 	<!-- /page content -->
-	
+
 	<script type="text/javascript">
 		// Single picker
 		$('.datepickerclass').daterangepicker({
@@ -248,7 +248,6 @@
 			}
 		});
 
-		 
 		$('.daterange-basic_new').daterangepicker({
 			applyClass : 'bg-slate-600',
 			cancelClass : 'btn-light',
