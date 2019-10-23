@@ -134,7 +134,7 @@
 										id="projId"
 										class="form-control form-control-select2 select2-hidden-accessible"
 										aria-hidden="true">
-										<option value="0">Please Select</option>
+										<option value="0">All</option>
 
 										<c:forEach items="${projList}" var="projList">
 
