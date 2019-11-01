@@ -31,12 +31,12 @@ public class HoursConversion {
 			//System.out.println("prev rem  **" + rem);
 			if (String.valueOf(hrs).length() == 1) {
 				hrs = "0".concat(hrs);
-				System.out.println("hrs after **" + hrs);
+				//System.out.println("hrs after **" + hrs);
 
 			}
 			if (String.valueOf(rem).length() == 1) {
 				rem = "0".concat(rem);
-				System.out.println("rem after **" + rem);
+				//System.out.println("rem after **" + rem);
  			}
  			min = hrs.concat(":").concat(rem);
 

@@ -1,6 +1,7 @@
 package com.ats.hradmin.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class ShortLeave {
 
@@ -27,6 +28,15 @@ public class ShortLeave {
 	private int delStatus;
 	
 	
+	List<String> mailNotifEmpList;
+	
+	public List<String> getMailNotifEmpList() {
+		return mailNotifEmpList;
+	}
+
+	public void setMailNotifEmpList(List<String> mailNotifEmpList) {
+		this.mailNotifEmpList = mailNotifEmpList;
+	}
 
 	public int getDelStatus() {
 		return delStatus;
@@ -146,7 +156,8 @@ public class ShortLeave {
 				+ ", shLeaveEmpId=" + shLeaveEmpId + ", slDuration=" + slDuration + ", shLeaveYear=" + shLeaveYear
 				+ ", shLeaveMonth=" + shLeaveMonth + ", isApproved=" + isApproved + ", approverId=" + approverId
 				+ ", addDttime=" + addDttime + ", apprDttime=" + apprDttime + ", updateDttime=" + updateDttime
-				+ ", makerUserId=" + makerUserId + ", delStatus=" + delStatus + "]";
+				+ ", makerUserId=" + makerUserId + ", delStatus=" + delStatus + ", mailNotifEmpList=" + mailNotifEmpList
+				+ "]";
 	}
 	
 }

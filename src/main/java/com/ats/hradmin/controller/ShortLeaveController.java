@@ -42,6 +42,20 @@ public class ShortLeaveController {
 
 			System.err.println("curDate " + curDate);
 			model.addObject("curDate", curDate);
+			HttpSession session = request.getSession();
+			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			MultiValueMap<String, Object>
+			map = new LinkedMultiValueMap<>();
+			map.add("locationId", userObj.getLocationIds());
+
+			
+			EmployeeInfo[] employeeInfo = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getEmpInfoByLocId", map, EmployeeInfo[].class);
+			List<EmployeeInfo> employeeInfoList = new ArrayList<EmployeeInfo>(Arrays.asList(employeeInfo));
+
+			model.addObject("employeeInfoList", employeeInfoList);
+
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,9 +74,6 @@ public class ShortLeaveController {
 			Date date = new Date();
 			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-			String projId = request.getParameter("projId");
-			String workTypeId = request.getParameter("workTypeId");
-			String typeId = request.getParameter("TypeId");
 			String sl_date = request.getParameter("sl_date");
 			String leaveHrs = request.getParameter("leaveHrs");
 			String remark = null;
@@ -84,14 +95,36 @@ public class ShortLeaveController {
 			shLeave.setShLeaveDesc(request.getParameter("leaveDesc"));
 			shLeave.setShLeaveEmpId(userObj.getEmpId());
 			shLeave.setShLeaveId(0);
-			shLeave.setShLeaveMonth(1);
-			shLeave.setShLeaveYear(2019);
+			shLeave.setShLeaveMonth(date.getMonth());
+			shLeave.setShLeaveYear(date.getYear());
 			shLeave.setSlDuration(HoursConversion.convertHoursToMin(leaveHrs));
 			shLeave.setUpdateDttime(sf.format(date));
 			shLeave.setDelStatus(1);
 			
+			String[] empIdArray = request.getParameterValues("empId");
+			String empIdList;
+			StringBuilder sb = new StringBuilder();
+			List<String> mailNotifEmpList = new ArrayList<String>();
+			mailNotifEmpList.add(""+userObj.getEmpFname()+" "+userObj.getEmpSname());
+			mailNotifEmpList.add(""+userObj.getEmpEmail());
+			
+
+			for (int i = 0; i < empIdArray.length; i++) {
+				sb = sb.append(empIdArray[i] + ",");
+				try {
+					mailNotifEmpList.add( empIdArray[i]);
+				} catch (Exception e) {
+					
+				}
+			}
+			empIdList = sb.toString();
+			empIdList = empIdList.substring(0, empIdList.length() - 1);
+			shLeave.setMailNotifEmpList(mailNotifEmpList);
+			
 			ShortLeave res = Constants.getRestTemplate().postForObject(Constants.url + "/saveShortLeave", shLeave,
 					ShortLeave.class);
+			
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();

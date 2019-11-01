@@ -157,6 +157,33 @@
 
 										</div>
 									</div>
+									
+											<div class="form-group row">
+
+								<label class="col-form-label col-lg-2" for="select2">
+									Email Recipients <span style="color: red">* </span>:
+								</label>
+								<div class="col-lg-10">
+									<select name="empId" data-placeholder="Select Employee"
+									id="empId" multiple="multiple"
+									class="form-control form-control-select2 select2-hidden-accessible"
+									tabindex="-1" aria-hidden="true">
+									<option disabled  value="">Select Email Recipients</option>
+									
+									<c:forEach items="${employeeInfoList}" var="empInfo">
+								<c:if test="${empInfo.empTypeId==1}">
+								<option selected value="${empInfo.empEmail}" selected>${empInfo.empSname}
+											${empInfo.empFname} ${empInfo.empMname}</option>
+								</c:if>
+									<c:if test="${empInfo.empTypeId!=1}">
+								<option value="${empInfo.empEmail}">${empInfo.empSname}
+											${empInfo.empFname} ${empInfo.empMname}</option>
+								</c:if>	
+									</c:forEach>
+								</select> <span class="validation-invalid-label" id="error_empId"
+									style="display: none;">This field is required.</span>
+								</div>
+								</div>
 
 									<div class="form-group row mb-0">
 										<div class="col-lg-10 ml-lg-auto">
