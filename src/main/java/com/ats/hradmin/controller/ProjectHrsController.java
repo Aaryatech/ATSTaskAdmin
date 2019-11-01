@@ -33,6 +33,7 @@ import com.ats.hradmin.model.GetProjWorkLog;
 import com.ats.hradmin.model.GetProjectHeader;
 import com.ats.hradmin.model.Info;
 import com.ats.hradmin.model.LoginResponse;
+import com.ats.hradmin.model.ProjTypeWorkLog;
 import com.ats.hradmin.model.ProjectHeader;
 import com.ats.hradmin.model.WorkLog;
 import com.ats.hradmin.model.WorkType;
@@ -761,7 +762,7 @@ public class ProjectHrsController {
 	}
 	
 	
-	//showProjHrsToAdm
+		
 	@RequestMapping(value = "/showEmpProjHrs", method = RequestMethod.GET)
 	public ModelAndView showEmpProjHrs(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView model = new ModelAndView("project/show_emp_work_log");
@@ -778,6 +779,79 @@ public class ProjectHrsController {
 				List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));
 				
 				model.addObject("logList", projectHeaderList1);
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+		
+	}
+	
+	@RequestMapping(value = "/workTypeHrs", method = RequestMethod.GET)
+	public ModelAndView workTypeHrs(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = new ModelAndView("project/show_work_type_log");
+		try {
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+
+
+
+			WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
+					WorkType[].class);
+			List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
+			model.addObject("workTypeList", workTypeList);
+				
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+		
+	}
+	
+	@RequestMapping(value = "/showProjTypeHrsToAdm", method = RequestMethod.POST)
+	public ModelAndView showProjTypeHrsToAdm(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = new ModelAndView("project/show_work_type_log");
+		String leaveDateRange = null;
+		String[] arrOfStr = null;
+		String fromDate = null;
+		String toDate = null;
+		try {
+			
+			leaveDateRange = request.getParameter("leaveDateRange");
+			arrOfStr = leaveDateRange.split("to", 2);
+			fromDate = DateConvertor.convertToYMD(arrOfStr[0].toString().trim());
+			toDate = DateConvertor.convertToYMD(arrOfStr[1].toString().trim());
+			
+			
+				MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+				
+				ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+						.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+				List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+				model.addObject("projList", projectHeaderList);
+
+
+
+				WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
+						WorkType[].class);
+				List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
+				model.addObject("workTypeList", workTypeList);
+				
+				
+				map.add("fromDate", fromDate);
+				map.add("toDate", toDate);
+				
+				ProjTypeWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+						.postForObject(Constants.url + "/getProjTypeWorkLogAdm", map, ProjTypeWorkLog[].class);
+				List<ProjTypeWorkLog> projectHeaderList1 = new ArrayList<ProjTypeWorkLog>(Arrays.asList(proHeaderArray1));
+				
+				model.addObject("logList", projectHeaderList1);
+				model.addObject("leaveDateRange", leaveDateRange);
+				
+				
 				
 		}catch (Exception e) {
 			e.printStackTrace();
