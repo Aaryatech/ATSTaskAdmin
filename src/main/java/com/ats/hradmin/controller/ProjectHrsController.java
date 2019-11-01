@@ -29,6 +29,7 @@ import com.ats.hradmin.model.AccessRightModule;
 import com.ats.hradmin.model.EmployeeInfo;
 import com.ats.hradmin.model.GetEmpLogGrpByDate;
 import com.ats.hradmin.model.GetEmpWorkLog;
+import com.ats.hradmin.model.GetProjWorkLog;
 import com.ats.hradmin.model.GetProjectHeader;
 import com.ats.hradmin.model.Info;
 import com.ats.hradmin.model.LoginResponse;
@@ -564,7 +565,7 @@ public class ProjectHrsController {
 		String toDate = null;
 		HttpSession session = request.getSession();
 		LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
-		String empIdList;
+		String projIdList;
 		if (request.getParameter("leaveDateRange") != null && request.getParameter("leaveDateRange") != "") {
 			System.err.println("Hi 1");
 			leaveDateRange = request.getParameter("leaveDateRange");
@@ -572,23 +573,23 @@ public class ProjectHrsController {
 			fromDate = DateConvertor.convertToYMD(arrOfStr[0].toString().trim());
 			toDate = DateConvertor.convertToYMD(arrOfStr[1].toString().trim());
 
-			String[] locId2 = request.getParameterValues("empId");
+			String[] locId2 = request.getParameterValues("projId");
 
 			StringBuilder sb = new StringBuilder();
-			List<Integer> empIds = new ArrayList<Integer>();
+			List<Integer> projIds = new ArrayList<Integer>();
 			for (int i = 0; i < locId2.length; i++) {
 				sb = sb.append(locId2[i] + ",");
 				try {
-					empIds.add(Integer.parseInt(locId2[i]));
+					projIds.add(Integer.parseInt(locId2[i]));
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 			}
-			empIdList = sb.toString();
-			empIdList = empIdList.substring(0, empIdList.length() - 1);
+			projIdList = sb.toString();
+			projIdList = projIdList.substring(0, projIdList.length() - 1);
 
 			model.addObject("leaveDateRange", leaveDateRange);
-			model.addObject("empIds", empIds);
+			model.addObject("projIds", projIds);
 
 		} else {
 
@@ -611,7 +612,7 @@ public class ProjectHrsController {
 
 			model.addObject("leaveDateRange", leaveDateRange);
 
-			empIdList = "ALL";
+			projIdList = "ALL";
 
 			fromDate = DateConvertor.convertToYMD(fromDate);
 			toDate = DateConvertor.convertToYMD(toDate);
@@ -621,24 +622,38 @@ public class ProjectHrsController {
 		try {
 
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-			map.add("empIdList", empIdList); // change by sachin
-			// map.add("projId", projId);
+			//map.add("empIdList", empIdList); // change by sachin
+			map.add("projIdList", projIdList);
 			map.add("fromDate", fromDate);
 			map.add("toDate", toDate);
 
-			GetEmpWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+			/*GetEmpWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
 					.postForObject(Constants.url + "/getWorkLogAdm", map, GetEmpWorkLog[].class);
-			List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));
-			model.addObject("logList", projectHeaderList1);
+			List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));*/
+			
+			
 
-			map = new LinkedMultiValueMap<>();
-			map.add("locationId", userObj.getLocationIds());
-
-			EmployeeInfo[] employeeInfo = Constants.getRestTemplate()
+			/*EmployeeInfo[] employeeInfo = Constants.getRestTemplate()
 					.postForObject(Constants.url + "/getEmpInfoByLocId", map, EmployeeInfo[].class);
 			List<EmployeeInfo> employeeInfoList = new ArrayList<EmployeeInfo>(Arrays.asList(employeeInfo));
 
-			model.addObject("employeeInfoList", employeeInfoList);
+			model.addObject("employeeInfoList", employeeInfoList);*/
+			
+			GetProjWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getProjWorkLog", map, GetProjWorkLog[].class);
+			List<GetProjWorkLog> projectHeaderList1 = new ArrayList<GetProjWorkLog>(Arrays.asList(proHeaderArray1));
+			model.addObject("logList", projectHeaderList1);
+			
+			model.addObject("fromDate", fromDate);
+			model.addObject("toDate", toDate);
+
+			map = new LinkedMultiValueMap<>();
+			map.add("locationId", userObj.getLocationIds());
+			
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -743,5 +758,31 @@ public class ProjectHrsController {
 			e.printStackTrace();
 		}
 		return model;
+	}
+	
+	
+	//showProjHrsToAdm
+	@RequestMapping(value = "/showEmpProjHrs", method = RequestMethod.GET)
+	public ModelAndView showEmpProjHrs(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView model = new ModelAndView("project/show_emp_work_log");
+		try {
+			
+				MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+				
+				map.add("projId", Integer.parseInt(request.getParameter("projWorkLogId")));
+				map.add("fromDate", request.getParameter("fromDate"));
+				map.add("toDate", request.getParameter("toDate"));
+				
+				GetEmpWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+						.postForObject(Constants.url + "/getEmpWorkLogAdm", map, GetEmpWorkLog[].class);
+				List<GetEmpWorkLog> projectHeaderList1 = new ArrayList<GetEmpWorkLog>(Arrays.asList(proHeaderArray1));
+				
+				model.addObject("logList", projectHeaderList1);
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return model;
+		
 	}
 }

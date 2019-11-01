@@ -70,7 +70,7 @@
 				<!-- Highlighting rows and columns -->
 				<div class="card">
 					<div class="card-header header-elements-inline">
-						<h5 class="card-title">Project Work Hours</h5>
+						<h5 class="card-title">Employee Work Hours</h5>
 						<!-- <div class="header-elements">
 							<div class="list-icons">
 								<a class="list-icons-item" data-action="collapse"></a>
@@ -116,7 +116,7 @@
 							}
 						%>
 
-						<form action="${pageContext.request.contextPath}/showProjHrsToAdm"
+						<%-- <form action="${pageContext.request.contextPath}/showProjHrsToAdm"
 							id="submitInsertLeave" method="GET">
 
 							<div class="form-group row">
@@ -126,30 +126,15 @@
 								</label>
 								<div class="col-lg-10">
 									<select name="projId" data-placeholder="Select Project"
-										id="projId"  multiple="multiple"
-										class="form-control form-control-select2 select2-hidden-accessible"
-										aria-hidden="true">
-										<option value="">Please Select</option>
-											<c:forEach items="${projList}" var="projList">
-												<c:set var="finded" value="0"></c:set>
-												<c:forEach items="${projIds}" var="projIds">
-												
-													<c:choose><c:when test="${projIds==projList.projectId}">
-														<c:set var="finded" value="1"></c:set>
-														</c:when>
-								
-													</c:choose>
+												id="projId" 
+												class="form-control form-control-select2 select2-hidden-accessible"
+												aria-hidden="true">
+												<option value="">Please Select</option>
+												<c:forEach items="${projList}" var="projList">
+													<option selected value="${projList.projectId}">${projList.projectTitle}</option>
 												</c:forEach>
-												
-												<c:if test="${finded==1}">
-													<option selected value="${projList.projectId}">${projList.projectTitle}	</option>
-												</c:if>
-												<c:if test="${finded==0}">
-													<option value="${projList.projectId}">${projList.projectTitle}	</option>
-												</c:if>
-											</c:forEach>
 
-										</select> <span class="validation-invalid-label" id="error_projId"
+											</select> <span class="validation-invalid-label" id="error_projId"
 												style="display: none;">This field is required.</span>
 								</div>
 							</div>
@@ -171,7 +156,7 @@
 									id="submtbtn" value="Search">
 
 							</div>
-						</form>
+						</form> --%>
 						<div id='loader' style='display: none;'>
 							<img
 								src='${pageContext.request.contextPath}/resources/assets/images/giphy.gif'
@@ -184,13 +169,12 @@
 							<thead>
 								<tr class="bg-blue">
 									<th width="10%">Sr No</th>
-									<!-- <th>Employee</th> -->
+									<th>Employee</th> 
 									<th>Project Name</th>
-									<!-- <th>Work Date</th> -->
+									<th>Work Date</th>
 									<th>Work Hrs</th>
-									<!-- <th>Log Type</th>
-									<th>Description</th> -->
-									<th>More Info</th> 
+									<th>Log Type</th>
+									<th>Description</th> 
 									<!-- <th class="text-center" width="10%">Actions</th> -->
 								</tr>
 							</thead>
@@ -198,15 +182,13 @@
 								<c:forEach items="${logList}" var="logList" varStatus="count">
 									<tr>
 										<td>${count.index+1}</td>
-										<%-- <td>${logList.empFname}${logList.empSname}</td> --%>
+										<td>${logList.empFname}${logList.empSname}</td> 
 										<td>${logList.projectTitle}</td>
-										<%-- <td>${logList.workDate}</td> --%>
+										<td>${logList.workDate}</td> 
 										<td>${logList.workHrs}</td>
-										<%-- <td>${logList.logType==1 ? 'Regular' : logList.logType==2 ? 'Extra'  : '-'}</td>
-										<td>${logList.workDesc}</td> --%>
-										<td class="text-center"><a
-											href="${pageContext.request.contextPath}/showEmpProjHrs?projWorkLogId=${logList.projectId}&fromDate=${fromDate}&toDate=${toDate}" target="_blank"><i
-												class="icon-three-bars" style="color: black;" title="More Info"></i></a></td>
+										<td>${logList.logType==1 ? 'Regular' : logList.logType==2 ? 'Extra'  : '-'}</td>
+										<td>${logList.workDesc}</td> 
+										
 								
 										<%-- <td class="text-center"><a
 											href="${pageContext.request.contextPath}/showEditProjHrs?workLogId=${logList.workLogId}"><i
