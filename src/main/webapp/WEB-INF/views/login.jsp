@@ -10,7 +10,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>HR Management</title>
 <link rel="shortcut icon"
-	href="${pageContext.request.contextPath}/resources/global_assets/images/companylogo.png"
+	href="${pageContext.request.contextPath}/resources/global_assets/images/powerdBy.png"
 	type="image/x-icon" />
 <!-- Global stylesheets -->
 <link
@@ -79,7 +79,7 @@ body {
 				alt="">
 			</a> --%>
 			<img
-				src="${pageContext.request.contextPath}/resources/global_assets/images/companylogo.png"
+				src="${pageContext.request.contextPath}/resources/global_assets/images/powerdBy.png"
 				alt="" style="height: 50px; width: 150px;">
 		</div>
 
