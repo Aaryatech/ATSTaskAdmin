@@ -70,7 +70,7 @@
 				<!-- Highlighting rows and columns -->
 				<div class="card">
 					<div class="card-header header-elements-inline">
-						<h5 class="card-title">Project Work Hours</h5>
+						<h5 class="card-title">Work Type Employees Hours Report</h5>
 						<!-- <div class="header-elements">
 							<div class="list-icons">
 								<a class="list-icons-item" data-action="collapse"></a>
@@ -117,7 +117,7 @@
 						%>
 
 						<form action="${pageContext.request.contextPath}/showProjTypeHrsToAdm"
-							id="submitInsertLeave" method="POST">
+							id="reportForm" method="POST">
 							<div class="form-group row">
 
 								<label class="col-form-label col-lg-2">Date Range<span
@@ -136,7 +136,6 @@
 									id="submtbtn" value="Search">
 
 							</div>
-						</form>
 						<div id='loader' style='display: none;'>
 							<img
 								src='${pageContext.request.contextPath}/resources/assets/images/giphy.gif'
@@ -162,6 +161,7 @@
 								<tr>
 										<td>${count1.index+1}</td>
 										<td>${projList.projectTitle}</td>
+										
 									<c:forEach items="${workTypeList}" var="workTypeList" varStatus="count2">
 										
 										
@@ -195,6 +195,8 @@
 								id="submtbtn" onclick="getProgReport(0,'showWorkTypeHrsLog')">
 								Excel <i class="icon-paperplane ml-2"></i>
 							</button> -->
+							
+						</form>
 					</div>
 
 				</div>
@@ -237,7 +239,7 @@
 <script type="text/javascript">
 		//use this function for all reports just get mapping form action name dynamically as like of prm from every report pdf,excel function	
 		function getProgReport(prm, mapping) {
-			alert("Hi");
+			//alert("Hi");
 			if (prm == 1) {
 				document.getElementById("p").value = "1";
 			}

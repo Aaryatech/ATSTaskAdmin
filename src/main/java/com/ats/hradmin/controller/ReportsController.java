@@ -42,7 +42,10 @@ import com.ats.hradmin.model.EmployeeOnBenchReport;
 import com.ats.hradmin.model.EmployeeProjectWise;
 import com.ats.hradmin.model.GetEmployeeInfo;
 import com.ats.hradmin.model.LoginResponse;
+import com.ats.hradmin.model.ProjTypeWorkLog;
+import com.ats.hradmin.model.ProjectHeader;
 import com.ats.hradmin.model.ProjectLocationWise;
+import com.ats.hradmin.model.WorkType;
 import com.ats.hradmin.util.ItextPageEvent;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -468,6 +471,267 @@ public class ReportsController {
 					}
 
 				}
+
+			} catch (DocumentException ex) {
+
+				// System.out.println("Pdf Generation Error: " + ex.getMessage());
+
+				ex.printStackTrace();
+
+			}
+
+		} catch (Exception e) {
+
+			System.err.println("Exce in showProgReport " + e.getMessage());
+			e.printStackTrace();
+
+		}
+
+	}
+	
+	/****************************************************************************************/
+	@RequestMapping(value = "/showWorkTypeHrsLog", method = RequestMethod.POST)
+	public void showWorkTypeHrsLog(HttpServletRequest request, HttpServletResponse response) {
+		List<ProjTypeWorkLog> logList = new ArrayList<ProjTypeWorkLog>();
+		String reportName = "Work Type Employees Hours Report";
+		try {
+
+			HttpSession session = request.getSession();
+
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+
+			WorkType[] workTypeListArr = Constants.getRestTemplate().getForObject(Constants.url + "/getWorkTypeList",
+					WorkType[].class);
+			List<WorkType> workTypeList = new ArrayList<WorkType>(Arrays.asList(workTypeListArr));
+		
+			
+			String leaveDateRange = request.getParameter("leaveDateRange");
+			String[] arrOfStr = leaveDateRange.split("to", 2);
+
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			map.add("fromDate", DateConvertor.convertToYMD(arrOfStr[0].toString().trim()));
+			map.add("toDate", DateConvertor.convertToYMD(arrOfStr[1].toString().trim()));
+
+			ProjTypeWorkLog[] proHeaderArray1 = Constants.getRestTemplate()
+					.postForObject(Constants.url + "/getProjTypeWorkLogAdm", map, ProjTypeWorkLog[].class);
+			 logList = new ArrayList<ProjTypeWorkLog>(Arrays.asList(proHeaderArray1));
+			Document document = new Document(PageSize.A4);
+			document.setMargins(50, 45, 50, 60);
+			document.setMarginMirroring(false);
+
+			String FILE_PATH = Constants.REPORT_SAVE;
+			File file = new File(FILE_PATH);
+
+			PdfWriter writer = null;
+
+			FileOutputStream out = new FileOutputStream(FILE_PATH);
+			try {
+				writer = PdfWriter.getInstance(document, out);
+			} catch (DocumentException e) {
+
+				e.printStackTrace();
+			}
+
+			String header = "";
+			String title = "                 ";
+
+			DateFormat DF2 = new SimpleDateFormat("dd-MM-yyyy");
+			String repDate = DF2.format(new Date());
+
+			ItextPageEvent event = new ItextPageEvent(header, title, "", "");
+
+			writer.setPageEvent(event);
+			// writer.add(new Paragraph("Curricular Aspects"));
+			int col = workTypeList.size()+2;
+			System.out.println("Cols------"+col);
+			PdfPTable table = new PdfPTable(col);
+
+			table.setHeaderRows(1);
+
+			try {
+				table.setWidthPercentage(100);
+				//table.setWidths(new float[] { 2.3f, 4.3f, 2.3f, 2.3f, 2.3f, 2.3f, 2.3f, 2.3f });
+				 table.setTotalWidth(document.getPageSize().getWidth() - 80);
+				Font headFontData = ReportCostants.headFontData;// new Font(FontFamily.TIMES_ROMAN, 12, Font.NORMAL,
+				// BaseColor.BLACK);
+				Font tableHeaderFont = ReportCostants.tableHeaderFont; // new Font(FontFamily.HELVETICA, 12, Font.BOLD,
+																		// BaseColor.BLACK);
+				tableHeaderFont.setColor(ReportCostants.tableHeaderFontBaseColor);
+
+				PdfPCell hcell = new PdfPCell();
+				hcell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
+				hcell = new PdfPCell(new Phrase("Sr.No.", tableHeaderFont));
+				hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				hcell.setBackgroundColor(ReportCostants.baseColorTableHeader);
+
+				table.addCell(hcell);
+
+				hcell = new PdfPCell(new Phrase("Project Name", tableHeaderFont));
+				hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				hcell.setBackgroundColor(ReportCostants.baseColorTableHeader);
+
+				table.addCell(hcell);
+				
+			for (int i = 0; i < workTypeList.size(); i++) {
+				WorkType workType = workTypeList.get(i);
+					hcell = new PdfPCell(new Phrase(workType.getWorkTypeName(), tableHeaderFont));
+					hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+					hcell.setBackgroundColor(ReportCostants.baseColorTableHeader);
+
+					table.addCell(hcell);
+				}
+
+				
+				
+				int index = 0;
+			for (int i = 0; i < projList.size(); i++) {
+				ProjectHeader proj = projList.get(i);
+					index++;
+					PdfPCell cell;
+					cell = new PdfPCell(new Phrase(String.valueOf(index), headFontData));
+					cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+					cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+					table.addCell(cell);
+					
+					cell = new PdfPCell(new Phrase("" + proj.getProjectTitle(), headFontData));
+					cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+					cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+					table.addCell(cell);
+					
+				for (int k = 0; k < workTypeList.size(); k++) {
+					WorkType workType = workTypeList.get(k);
+				
+					String log = "-";
+				for (int j = 0; j < logList.size(); j++) {
+					// System.err.println("I " + i);
+					ProjTypeWorkLog hrlog = logList.get(j);
+
+					if(workType.getWorkTypeId()==hrlog.getWorkTypeId() && hrlog.getProjectId()==proj.getProjectId() ) {
+						
+						log=hrlog.getWorkHrs();
+						
+					}
+
+					
+				}
+				cell = new PdfPCell(new Phrase("" + log, headFontData));
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+				table.addCell(cell);
+
+				}
+			}
+
+				document.open();
+				Font hf = new Font(FontFamily.TIMES_ROMAN, 12.0f, Font.UNDERLINE, BaseColor.BLACK);
+
+				Paragraph name = new Paragraph(reportName, hf);
+				name.setAlignment(Element.ALIGN_CENTER);
+				document.add(name);
+				document.add(new Paragraph("\n"));
+
+				document.add(new Paragraph("Date Range:" + leaveDateRange));
+				document.add(new Paragraph("\n"));
+
+				DateFormat DF = new SimpleDateFormat("dd-MM-yyyy");
+
+				document.add(table);
+
+				int totalPages = writer.getPageNumber();
+
+				// System.out.println("Page no " + totalPages);
+
+				document.close();
+				int p = Integer.parseInt(request.getParameter("p"));
+				// System.err.println("p " + p);
+
+				if (p == 1) {
+
+					if (file != null) {
+
+						String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+
+						if (mimeType == null) {
+
+							mimeType = "application/pdf";
+
+						}
+
+						response.setContentType(mimeType);
+
+						response.addHeader("content-disposition",
+								String.format("inline; filename=\"%s\"", file.getName()));
+
+						response.setContentLength((int) file.length());
+
+						InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+						try {
+							FileCopyUtils.copy(inputStream, response.getOutputStream());
+						} catch (IOException e) {
+							// System.out.println("Excep in Opening a Pdf File");
+							e.printStackTrace();
+						}
+					}
+				} else {/*
+
+					List<ExportToExcel> exportToExcelList = new ArrayList<ExportToExcel>();
+
+					ExportToExcel expoExcel = new ExportToExcel();
+					List<String> rowData = new ArrayList<String>();
+
+					rowData.add("Sr. No");
+					rowData.add("Employee Name ");
+					rowData.add("Work Hrs");
+
+					expoExcel.setRowData(rowData);
+
+					exportToExcelList.add(expoExcel);
+					int cnt = 1;
+					for (int i = 0; i < progList.size(); i++) {
+						expoExcel = new ExportToExcel();
+						rowData = new ArrayList<String>();
+						cnt = cnt + i;
+
+						rowData.add("" + (i + 1));
+
+						rowData.add("" + progList.get(i).getEmpFname() + "" + progList.get(i).getEmpSname());
+						rowData.add("" + progList.get(i).getEmpBudHr());
+
+						expoExcel.setRowData(rowData);
+						exportToExcelList.add(expoExcel);
+
+					}
+
+					XSSFWorkbook wb = null;
+					try {
+						System.out.println("exportToExcelList" + exportToExcelList.toString());
+
+						wb = ExceUtil.createWorkbook(exportToExcelList, "", reportName, "  Date:" + leaveDateRange + "",
+								"", 'C');
+
+						ExceUtil.autoSizeColumns(wb, 3);
+						response.setContentType("application/vnd.ms-excel");
+						String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+						response.setHeader("Content-disposition",
+								"attachment; filename=" + reportName + "-" + date + ".xlsx");
+						wb.write(response.getOutputStream());
+
+					} catch (IOException ioe) {
+						throw new RuntimeException("Error writing spreadsheet to output stream");
+					} finally {
+						if (wb != null) {
+							wb.close();
+						}
+					}
+
+				*/}
 
 			} catch (DocumentException ex) {
 
