@@ -39,6 +39,8 @@ import com.ats.hradmin.common.VpsImageUpload;
 import com.ats.hradmin.leave.model.CalenderYear;
 import com.ats.hradmin.leave.model.EmpLeaveHistoryRep;
 import com.ats.hradmin.leave.model.GetAuthorityIds;
+import com.ats.hradmin.leave.model.GetPendingLeaveCount;
+import com.ats.hradmin.leave.model.LeaveDetail;
 import com.ats.hradmin.model.AccessRightModule;
 import com.ats.hradmin.model.AuthorityInformation;
 import com.ats.hradmin.model.Company;
@@ -46,6 +48,7 @@ import com.ats.hradmin.model.EmployeeInfo;
 import com.ats.hradmin.model.GetEmpShortLeaves;
 import com.ats.hradmin.model.GetUserData;
 import com.ats.hradmin.model.Info;
+import com.ats.hradmin.model.LeaveCount;
 import com.ats.hradmin.model.LoginResponse;
 import com.ats.hradmin.model.ProjectWiseHrsCount;
 import com.ats.hradmin.model.User;
@@ -297,6 +300,11 @@ public class HomeController {
 			mav.addObject("projHrsList", employeeInfoList1);
 			System.out.println("Login Process  2" +employeeInfoList1.toString());
 			
+			GetPendingLeaveCount leaveCount = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getPendingLeaveCount", GetPendingLeaveCount.class);
+			//mav.addObject("leaveCount", leaveCount.getPendingLeaveCount());
+			session.setAttribute("leaveCount", leaveCount.getPendingLeaveCount());
+			session.setAttribute("userType", userObj.getEmpTypeId());
 			
 			/*
 			 * MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,
