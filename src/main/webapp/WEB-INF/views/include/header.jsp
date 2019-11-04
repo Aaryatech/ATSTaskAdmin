@@ -37,7 +37,8 @@
 			<c:set value="${sessionScope.userType}" var="user"></c:set>
 						<c:if test="${user==1}">
 				<li class="nav-item dropdown">
-					<a href="#" class="navbar-nav-link dropdown-toggle caret-0" data-toggle="dropdown">
+					<a href="${pageContext.request.contextPath}/empInfoHistory" class="navbar-nav-link">
+					<!-- class="navbar-nav-link dropdown-toggle caret-0" data-toggle="dropdown" -->      <!--// Open commented code(popup) -->
 						<i class="icon-calendar3" title="Pending Leaves"></i>
 						<span class="d-md-none ml-2">Pending Leaves</span>
 						
