@@ -8,9 +8,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>HR Management</title>
+<title> ats | HR Management</title>
 <link rel="shortcut icon"
-	href="${pageContext.request.contextPath}/resources/global_assets/images/powerdBy.png"
+	href="${pageContext.request.contextPath}/resources/global_assets/images/aaryalogo.png"
 	type="image/x-icon" />
 <!-- Global stylesheets -->
 <link
@@ -79,7 +79,7 @@ body {
 				alt="">
 			</a> --%>
 			<img
-				src="${pageContext.request.contextPath}/resources/global_assets/images/powerdBy.png"
+				src="${pageContext.request.contextPath}/resources/global_assets/images/atslogo.png"
 				alt="" style="height: 50px; width: 150px;">
 		</div>
 
