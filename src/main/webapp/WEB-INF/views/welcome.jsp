@@ -6,6 +6,14 @@
 <head>
 
 <jsp:include page="/WEB-INF/views/include/metacssjs.jsp"></jsp:include>
+
+<c:url var="empInfoHistoryList" value="/empInfoHistoryList" />
+<style type="text/css">
+.dataTables_wrapper{
+	margin-left: 15px;
+	margin-right: 15px;
+}
+</style>
 </head>
 
 <body>
@@ -182,14 +190,17 @@
 						
 						
 							<div class="row">
-
+							<c:if test="${empLeave==1}">
 							<c:forEach items="${employeeInfoList}" var="leaveHistoryList">
 								
 								<div class="col-sm-12 col-md-4">
+									
 									<div class="card">
+									
 										<div
 											class="card-header bg-success text-white header-elements-inline">
 											<h6 class="card-title">${leaveHistoryList.empName}</h6>
+											
 											<div class="header-elements">
 												<div class="list-icons">
 													<a class="list-icons-item" data-action="collapse"></a> <a
@@ -197,17 +208,49 @@
 												</div>
 											</div>
 										</div>
-
+									<a href="#" onclick="show(${leaveHistoryList.empId}, ${sessionScope.currYearId})"><!-- ${pageContext.request.contextPath}/empInfoHistoryList?empId=${leaveHistoryList.empId}&calYrId=${sessionScope.currYearId} -->
 										<div class="card-body" align="left">
 											Pending Leaves 
 											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve} (Days)</h4>
 										</div>
+									</a>
 									</div>
+									
 								</div>
+								
 							</c:forEach>
+							</c:if>
+							
+							<c:if test="${empLeave==2}">
+								<div class="col-sm-12 col-md-4">
+									
+									<div class="card">
+									
+										<div
+											class="card-header bg-success text-white header-elements-inline">
+											<h6 class="card-title">${leaveHistoryList.empName}</h6>
+											
+											<div class="header-elements">
+												<div class="list-icons">
+													<a class="list-icons-item" data-action="collapse"></a> <a
+														class="list-icons-item" data-action="remove"></a>
+												</div>
+											</div>
+										</div>
+									<a href="#" onclick="show(${leaveHistoryList.empId}, ${sessionScope.currYearId})"><!-- ${pageContext.request.contextPath}/empInfoHistoryList?empId=${leaveHistoryList.empId}&calYrId=${sessionScope.currYearId} -->
+										<div class="card-body" align="left">
+											Pending Leaves 
+											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve} (Days)</h4>
+										</div>
+									</a>
+									</div>
+									
+								</div>
+							
+							</c:if>
+							</div>
 						</div>
-						</div>
-						</div>
+					</div>
 						
 						<div class="card">
 					<div class="card-header header-elements-inline">
@@ -223,7 +266,7 @@
 					<div class="card-body">
 						
 						<div class="row">
-
+						<c:if test="${empShortLeave==1}">
 							<c:forEach items="${shortLeaveList}" var="slList">
 								<div class="col-sm-12 col-md-4">
 									<div class="card">
@@ -245,6 +288,29 @@
 									</div>
 								</div>
 							</c:forEach>
+							</c:if>
+							
+							<c:if test="${empShortLeave==2}">
+								<div class="col-sm-12 col-md-4">
+									<div class="card">
+										<div
+											class="card-header bg-dark text-white header-elements-inline">
+											<h6 class="card-title">${shortLeave.empFname} ${shortLeave.empSname}</h6>
+											<div class="header-elements">
+												<div class="list-icons">
+													<a class="list-icons-item" data-action="collapse"></a> <a
+														class="list-icons-item" data-action="remove"></a>
+												</div>
+											</div>
+										</div>
+
+										<div class="card-body" align="left">
+											Short Leaves
+											<h4>${shortLeave.shLeaveCount}</h4>
+										</div>
+									</div>
+								</div>
+							</c:if>
 						</div>
 						</div>
 						</div>
@@ -353,6 +419,168 @@
 
 	</div>
 	<!-- /page content -->
+<script type="text/javascript">
+		function show(empId, calYrId) {
+		//	var empId = document.getElementById("empId").value;
+		//	var calYrId = document.getElementById("calYrId").value;
 
+			var valid = true;
+
+			if (empId == null || empId == "") {
+				valid = false;
+				alert("Please Select Employee");
+			}
+
+			var valid = true;
+			if (calYrId == null || calYrId == "") {
+				valid = false;
+				alert("Please Select Year");
+
+				var dataTable = $('#bootstrap-data-table').DataTable();
+				dataTable.clear().draw();
+
+			}
+			$("#loader").show();
+
+			if (valid == true) {
+
+				$
+						.getJSON(
+								'${empInfoHistoryList}',
+								{
+									empId : empId,
+									calYrId : calYrId,
+									ajax : 'true',
+								},
+
+								function(data) {
+									
+									var dataTable = $('#bootstrap-data-table')
+											.DataTable();
+									dataTable.clear().draw();
+
+									$
+											.each(
+													data,
+													function(i, v) {
+
+														var str = '<a href="${pageContext.request.contextPath}/empDetailHistory?leaveId='
+																+ v.exVar1
+																+ '" ><i class="icon-list-unordered"   style="color:black"></i></a>'
+
+														var current_status;
+														if (v.exInt1 == 1) {
+															/* current_status="Pending"; */
+
+															current_status = '<span class="badge badge-info">Initial Pending</span>';
+														} else if (v.exInt1 == 2) {
+
+															current_status = '<span class="badge badge-secondary">Final Pending</span>';
+														} else if (v.exInt1 == 3) {
+															current_status = '<span class="badge badge-success">Final Approved</span>';
+														} else if (v.exInt1 == 7) {
+															current_status = '<span class="badge badge-danger">Leave Cancelled</span>';
+														} else if (v.exInt1 == 8) {
+															current_status = '<span class="badge badge-danger">Initial Rejected</span>';
+														} else if (v.exInt1 == 9) {
+															current_status = '<span class="badge badge-danger">Final Rejected</span>';
+														}
+
+														var duration;
+														if (v.leaveDuration == 1) {
+															/* current_status="Pending"; */
+
+															duration = 'Full Day';
+														}
+														if (v.leaveDuration == 2) {
+															/* current_status="Pending"; */
+
+															duration = '1st Half Day';
+														}if (v.leaveDuration == 3) {
+															/* current_status="Pending"; */
+
+															duration = '2nd Half Day';
+														}
+
+														dataTable.row
+																.add(
+																		[
+																				i + 1,
+																				v.empSname
+																						+ " "
+																						+ v.empFname,
+																				v.empDeptName,
+																				v.lvTitle,
+																				v.leaveNumDays,
+																				duration,
+																				v.leaveFromdt
+																						+ " To "
+																						+ v.leaveTodt,
+																				current_status,
+																				str ])
+																.draw();
+													});
+									$('#modal_full').modal('show'); 
+									$("#loader").hide();
+
+								});
+
+			}//end of if valid ==true
+
+		}
+
+		function callDetail(exVar1, empId) {
+			alert(exVar1);
+			window
+					.open("${pageContext.request.contextPath}/empDetailHistory?empId="
+							+ exVar1);
+
+		}
+
+		function callDelete(weighId) {
+			window.open("${pageContext.request.contextPath}/deleteWeighing/"
+					+ weighId);
+
+		}
+	</script>
+ <!-- Full width modal -->
+				<div id="modal_full" class="modal fade" tabindex="-1">
+					<div class="modal-dialog modal-full">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title">Employee Leave Details</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+<div class="table-responsive">
+							<table 
+							class="table table-bordered table-hover datatable-highlight1 datatable-button-html5-basic  datatable-button-print-columns1"
+							id="bootstrap-data-table">
+							<thead>
+								<tr class="bg-blue">
+									<th width="10%">Sr.no</th>
+									<th>Name</th>
+									<th>Department Name</th>
+									<th>Leave Type</th>
+									 
+									<th>Leave Days</th>
+									<th>Leave Duration</th>
+									<th>Date</th>
+									 
+									<th>Leave Status</th>
+
+									<th class="text-center" width="10%">Actions</th>
+								</tr>
+							</thead>
+						</table>
+						</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+								<!-- <button type="button" class="btn bg-primary">Save changes</button> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /full width modal -->
 </body>
 </html>

@@ -287,11 +287,33 @@ public class HomeController {
 		List<ProjectWiseHrsCount> employeeInfoList1 = new ArrayList<ProjectWiseHrsCount>();
 
 		try {
+			
 			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
+			int empType = userObj.getEmpTypeId();
+		 	
+			int empLeave = 0;
+			if(empType==1) {
  			EmpLeaveHistoryRep[] employeeInfo = Constants.getRestTemplate()
 					.getForObject(Constants.url + "/getLeaveCountOfAllEmployee", EmpLeaveHistoryRep[].class);
  			employeeInfoList = new ArrayList<EmpLeaveHistoryRep>(Arrays.asList(employeeInfo));
-			mav.addObject("employeeInfoList", employeeInfoList);
+			
+ 			mav.addObject("employeeInfoList", employeeInfoList);
+ 			empLeave=1;	
+ 			mav.addObject("empLeave", empLeave);
+			}else {
+				
+				MultiValueMap<String, Object> map  = new LinkedMultiValueMap<>();
+				map.add("empId", userObj.getEmpId());
+			
+				EmpLeaveHistoryRep employeeInfo= Constants.getRestTemplate()
+						.postForObject(Constants.url + "/getLeaveCountOfEmployee", map, EmpLeaveHistoryRep.class);
+				System.out.println("Employee--------"+employeeInfo);
+	 			mav.addObject("leaveHistoryList", employeeInfo);
+	 			empLeave=2;
+	 			mav.addObject("empLeave", empLeave);
+			}
+ 			
+			
 
 			ProjectWiseHrsCount[] employeeInfo1 = Constants.getRestTemplate()
 					.getForObject(Constants.url + "/getProjectHrsCount", ProjectWiseHrsCount[].class);
@@ -315,34 +337,54 @@ public class HomeController {
 			 * AuthorityInformation.class); mav.addObject("authorityInformation",
 			 * authorityInformation);
 			 */
+			int empShortLeave = 0;
 			
+			Calendar c = Calendar.getInstance(); // this takes current date
 			
-			MultiValueMap<String, Object> map  = new LinkedMultiValueMap<>();
-				map.add("empIdList", "ALL"); // change by sachin
-				// map.add("projId", projId);
+			System.out.println(c.getTime());
+
+			Date toDate1 = c.getTime();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+			String toDate = sdf.format(toDate1);
+
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			Date fromDate1 = c.getTime();
+
+			String fromDate = sdf.format(fromDate1);
+			
+			if(empType==1) {
 				
-				Calendar c = Calendar.getInstance(); // this takes current date
-
-				System.out.println(c.getTime());
-
-				Date toDate1 = c.getTime();
-
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
-				String toDate = sdf.format(toDate1);
-
-				c.set(Calendar.DAY_OF_MONTH, 1);
-				Date fromDate1 = c.getTime();
-
-				String fromDate = sdf.format(fromDate1);
-				
-				map.add("fromDate", DateConvertor.convertToYMD(fromDate));
-				map.add("toDate", DateConvertor.convertToYMD(toDate));
-
-				GetEmpShortLeaves[] proHeaderArray1 = Constants.getRestTemplate()
-						.postForObject(Constants.url + "/getShortLeaveList", map, GetEmpShortLeaves[].class);
-				List<GetEmpShortLeaves> projectHeaderList1 = new ArrayList<GetEmpShortLeaves>(Arrays.asList(proHeaderArray1));
-				mav.addObject("shortLeaveList", projectHeaderList1);
+					MultiValueMap<String, Object> map  = new LinkedMultiValueMap<>();
+					
+					map.add("empIdList", "ALL"); // change by sachin
+					// map.add("projId", projId);
+					
+					map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+					map.add("toDate", DateConvertor.convertToYMD(toDate));
+	
+					GetEmpShortLeaves[] proHeaderArray1 = Constants.getRestTemplate()
+							.postForObject(Constants.url + "/getShortLeaveList", map, GetEmpShortLeaves[].class);
+					List<GetEmpShortLeaves> projectHeaderList1 = new ArrayList<GetEmpShortLeaves>(Arrays.asList(proHeaderArray1));
+					mav.addObject("shortLeaveList", projectHeaderList1);
+					
+					mav.addObject("empShortLeave", 1);
+			}else {
+					
+					MultiValueMap<String, Object> map  = new LinkedMultiValueMap<>();
+					
+					map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+					map.add("toDate", DateConvertor.convertToYMD(toDate));
+					map.add("empId", userObj.getEmpId());
+					
+					GetEmpShortLeaves empShortLeaveDetail = Constants.getRestTemplate()
+							.postForObject(Constants.url + "/getEmpShortLeave", map, GetEmpShortLeaves.class);
+					
+					mav.addObject("shortLeave", empShortLeaveDetail);
+					
+					mav.addObject("empShortLeave", 2);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -385,6 +427,7 @@ public class HomeController {
 
 					mav = "redirect:/dashboard";
 					session.setAttribute("UserDetail", userObj);
+					session.setAttribute("employeeId", userObj.getEmpId());
 					CalenderYear currYr = Constants.getRestTemplate()
 							.getForObject(Constants.url + "getCalculateYearListIsCurrent", CalenderYear.class);
 					System.out.println("currYr.getCalYrId():" + currYr.getCalYrId());
