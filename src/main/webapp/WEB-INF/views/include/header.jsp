@@ -6,7 +6,7 @@
 		<div class="navbar-brand">
 			<a href="${pageContext.request.contextPath}/dashboard" class="d-inline-block">
 				<%-- <img src="${pageContext.request.contextPath}/resources/global_assets/images/logo_light.png" alt=""> --%>
-				<img src="${pageContext.request.contextPath}/resources/global_assets/images/powerdBy.png" alt="" style="height: 50px; width: 110px;" >
+				<img src="${pageContext.request.contextPath}/resources/global_assets/images/atslogo.png" alt="" style="height: 50px; width: 110px;" >
 			</a>
 		</div>
 
@@ -37,7 +37,7 @@
 			<c:set value="${sessionScope.userType}" var="user"></c:set>
 						<c:if test="${user==1}">
 				<li class="nav-item dropdown">
-					<a href="${pageContext.request.contextPath}/empInfoHistory" class="navbar-nav-link">
+					<a href="${pageContext.request.contextPath}/showLeaveApprovalByAuthority" class="navbar-nav-link">
 					<!-- class="navbar-nav-link dropdown-toggle caret-0" data-toggle="dropdown" -->      <!--// Open commented code(popup) -->
 						<i class="icon-calendar3" title="Pending Leaves"></i>
 						<span class="d-md-none ml-2">Pending Leaves</span>

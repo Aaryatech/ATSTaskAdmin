@@ -49,15 +49,7 @@
 
 						<a href="#" class="header-elements-toggle text-default d-md-none"><i
 							class="icon-more"></i></a>
-
-
-
 					</div>
-
-
-
-
-
 				</div>
 			</div>
 			<!-- /page header -->
@@ -208,7 +200,7 @@
 												</div>
 											</div>
 										</div>
-									<a href="#" onclick="show(${leaveHistoryList.empId}, ${sessionScope.currYearId})"><!-- ${pageContext.request.contextPath}/empInfoHistoryList?empId=${leaveHistoryList.empId}&calYrId=${sessionScope.currYearId} -->
+									<a href="#" onclick="show(${leaveHistoryList.empId}, ${sessionScope.currYearId})">
 										<div class="card-body" align="left">
 											Pending Leaves 
 											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve} (Days)</h4>
@@ -236,13 +228,12 @@
 														class="list-icons-item" data-action="remove"></a>
 												</div>
 											</div>
-										</div>
-									<a href="#" onclick="show(${leaveHistoryList.empId}, ${sessionScope.currYearId})"><!-- ${pageContext.request.contextPath}/empInfoHistoryList?empId=${leaveHistoryList.empId}&calYrId=${sessionScope.currYearId} -->
+										</div>									
 										<div class="card-body" align="left">
 											Pending Leaves 
 											<h4>${leaveHistoryList.balLeave+leaveHistoryList.lvsAllotedLeaves-leaveHistoryList.sactionLeave-leaveHistoryList.aplliedLeaeve} (Days)</h4>
 										</div>
-									</a>
+									
 									</div>
 									
 								</div>
