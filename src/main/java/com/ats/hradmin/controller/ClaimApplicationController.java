@@ -167,15 +167,11 @@ public class ClaimApplicationController {
 			model.addObject("editEmp", editEmp);
 			System.out.println("empInfo list " + editEmp.toString());
 
-			map = new LinkedMultiValueMap<>();
-			map.add("companyId", userObj.getCompanyId());
-			map.add("empId", empId);
-			ProjectHeader[] employeeDoc1 = Constants.getRestTemplate()
-					.postForObject(Constants.url + "/getProjectsListByCompanyIdAndEmpId", map, ProjectHeader[].class);
-
-			List<ProjectHeader> proTypeList = new ArrayList<ProjectHeader>(Arrays.asList(employeeDoc1));
-			System.out.println("proTypeList list " + proTypeList.toString());
-			model.addObject("projectTypeList", proTypeList);
+			ProjectHeader[] proHeaderArray = Constants.getRestTemplate()
+					.getForObject(Constants.url + "/getProjectAllList", ProjectHeader[].class);
+			List<ProjectHeader> projectHeaderList = new ArrayList<ProjectHeader>(Arrays.asList(proHeaderArray));
+			model.addObject("projList", projectHeaderList);
+ 			model.addObject("projectTypeList", projectHeaderList);
 			map = new LinkedMultiValueMap<String, Object>();
 			map.add("empId", empId);
 

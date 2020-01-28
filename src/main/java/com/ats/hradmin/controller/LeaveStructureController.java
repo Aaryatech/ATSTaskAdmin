@@ -424,7 +424,7 @@ public class LeaveStructureController {
 
 			HttpSession session = request.getSession();
 			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
-
+			System.err.println("curr yr" + session.getAttribute("currYearId"));
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 			map.add("companyId", userObj.getCompanyId());
 			LeaveStructureHeader[] lvStrSummery = Constants.getRestTemplate()
@@ -828,8 +828,8 @@ public class LeaveStructureController {
 	public String submitStructureListForProb(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			
-			Info info1=new Info();
+
+			Info info1 = new Info();
 			HttpSession session = request.getSession();
 			LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
 			int lvsId = Integer.parseInt(request.getParameter("lvsId"));
@@ -876,29 +876,29 @@ public class LeaveStructureController {
 
 						for (int p = 0; p < probLeaveStructList.size(); p++) {
 							for (int q = 0; q < LeaveBalanceCalList.size(); q++) {
-								if (probLeaveStructList.get(p).getLvTypeId() == LeaveBalanceCalList.get(q).getLvTypeId()
-									) {
+								if (probLeaveStructList.get(p).getLvTypeId() == LeaveBalanceCalList.get(q)
+										.getLvTypeId()) {
 
 									map = new LinkedMultiValueMap<>();
 									map.add("lvTypeId", LeaveBalanceCalList.get(q).getLvTypeId());
 									map.add("empId", arrOfStr[i]);
-									map.add("noDays",probLeaveStructList.get(p).getLvsAllotedLeaves());
-									  info1 = Constants.getRestTemplate().postForObject(
-											Constants.url + "/updateLeaveBalCal", map, Info.class);
+									map.add("noDays", probLeaveStructList.get(p).getLvsAllotedLeaves());
+									info1 = Constants.getRestTemplate()
+											.postForObject(Constants.url + "/updateLeaveBalCal", map, Info.class);
 
 								}
 
 							}
 						}
-						
-						if(info.isError() == false) {
-							System.err.println("curr date is *****"+curDate);
+
+						if (info.isError() == false) {
+							System.err.println("curr date is *****" + curDate);
 							map = new LinkedMultiValueMap<>();
- 							map.add("empId", arrOfStr[i]);
+							map.add("empId", arrOfStr[i]);
 							map.add("joinDate", curDate);
 							Info info2 = Constants.getRestTemplate()
 									.postForObject(Constants.url + "/updateEmployeeJoiningDate", map, Info.class);
-							
+
 						}
 
 					}
