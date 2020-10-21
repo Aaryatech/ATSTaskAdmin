@@ -121,7 +121,7 @@ public class HomeController {
 		HttpSession session = request.getSession();
 		LoginResponse userObj = (LoginResponse) session.getAttribute("UserDetail");
 		ModelAndView mav = new ModelAndView("changeProfPic");
-		mav.addObject("empId", userObj.getUserId());
+		mav.addObject("empId", userObj.getEmpId());
 
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("empId", userObj.getUserId());
