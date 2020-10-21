@@ -148,9 +148,9 @@
 									<div class="form-group row">
 										<label class="col-form-label col-lg-2" for="remark">Remark : </label>
 										<div class="col-lg-10">
-											<textarea rows="3" cols="3" class="form-control"  value="${editwork.workTypeDesc}"
+											<textarea rows="3" cols="3" class="form-control"  
 												placeholder="Any Remark" onchange="trim(this)" id="remark"
-												name="remark"> </textarea>
+												name="remark">${editwork.workTypeDesc}</textarea>
 
 										</div>
 									</div>

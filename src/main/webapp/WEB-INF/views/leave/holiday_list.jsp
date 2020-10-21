@@ -134,7 +134,7 @@
 										<td>${count.index+1}</td>
 										<td>${holiday.exVar2}</td>
 										<td>${holiday.locName}</td>
-										<td>${holiday.calYrFromDate}_${holiday.calYrToDate}</td>
+										<td>${holiday.calYrFromDate} to ${holiday.calYrToDate}</td>
 										<td>${holiday.holidayFromdt}</td>
 										<td>${holiday.holidayTodt}</td>
 
